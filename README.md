@@ -38,6 +38,7 @@ Build it in WSL Ubuntu (amd64):
 
 ## Licenses
 
+- The original code in this repo is MIT-licensed. See [`LICENSE`](LICENSE).
 - EmulatorJS (`snes/data/`) is GPL-3.0. See `snes/data/LICENSE-EmulatorJS.txt`.
 - The Snes9x cores are under the Snes9x license (non-commercial). Each core's license text is inside its `.data` archive.
 - No ROMs are included. Use only games you own.
