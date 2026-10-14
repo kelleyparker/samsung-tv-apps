@@ -1,0 +1,22 @@
+# ROMs are copyrighted - supply your own
+snes/roms/*
+!snes/roms/.gitkeep
+*.sfc
+*.smc
+
+# Personal media (photo icon and video) - add your own icon.png / video/clip.mp4
+app1/icon.png
+app1/photo_full.png
+app1/video/
+spike/icon.png
+
+# Tizen build and signing output
+*.wgt
+.buildResult/
+.sign/
+author-signature.xml
+signature*.xml
+
+# Misc
+__pycache__/
+*.log

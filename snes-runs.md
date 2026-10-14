@@ -1,0 +1,125 @@
+# SNES app performance runs (Movingstyle UN27LSM7FAXXZA)
+
+Metric: after a 20s warm-up, ~2s windows of requestAnimationFrame timing reported by the TV. Target: ~60 fps, >=90% hitch-free windows.
+
+- **Pre-label runs** (2026-10-14)
+  - 1920x1080, non-threaded, console->PC logging on: steady ~59 fps, startup stall 2.9s
+  - 1920x1080, non-threaded, logging off: startup stall 2.8s
+  - 1920x1080, threaded: startup stall 1.6s (kept threaded)
+  - 960x540 canvas scaled 2x: avg 58.4 fps, hitch-free 23% -> resolution is NOT the bottleneck; reverted to 1080p
+- **Run A** (2026-10-14) - 1080p, threaded, FPS overlay on
+  - avg 58.4 fps, hitch-free windows 32%, 50ms+ hitches in 10%
+- **Run B** (2026-10-14 08:44) - FPS counter off
+  - settings: overlay=False, threads=True, opts={}
+  - Run B (FPS counter off): 30 windows | avg 58.10 fps | ~114 dropped frames/min | hitch-free windows 20% | 50ms+ hitches in 7% | canvas 1920x1080
+  -   [cfg] Run B core=unknown threads=true opts={}
+- **Run C** (2026-10-14 08:47) - WebGL2 core
+  - settings: overlay=True, threads=True, opts={"webgl2Enabled":"enabled"}
+  - Run C (WebGL2 core): 30 windows | avg 58.75 fps | ~75 dropped frames/min | hitch-free windows 27% | 50ms+ hitches in 3% | canvas 1920x1080
+  -   [cfg] Run C core=snes9x-thread-wasm.data threads=true opts={"webgl2Enabled":"enabled"}
+- **Run D** (2026-10-14 08:51) - WebGL2 + nearest audio resampler
+  - settings: overlay=True, threads=True, opts={"webgl2Enabled":"enabled"}, retroarch={"audio_resampler":"nearest"}
+  - Run D (WebGL2 + nearest audio resampler): 64 windows | avg 57.70 fps | ~138 dropped frames/min | hitch-free windows 9% | 50ms+ hitches in 17% | canvas 1920x1080
+  -   [cfg] Run D core=snes9x-thread-wasm.data threads=true opts={"webgl2Enabled":"enabled"} ra={"audio_resampler":"nearest"} tuned=true
+- **Run E** (2026-10-14 08:54) - repeat of Run C (WebGL2), full-length baseline
+  - settings: overlay=True, threads=True, opts={"webgl2Enabled":"enabled"}, retroarch={}
+  - Run E (repeat of Run C (WebGL2), full-length baseline): 64 windows | avg 58.26 fps | ~104 dropped frames/min | hitch-free windows 14% | 50ms+ hitches in 5% | canvas 1920x1080
+  -   [cfg] Run E core=snes9x-thread-wasm.data threads=true opts={"webgl2Enabled":"enabled"} ra={} tuned=false
+- **Run F** (2026-10-14 08:57) - CONTROL: no emulator, counter only
+  - settings: overlay=True, threads=True, opts={}, retroarch={}
+  - Run F (CONTROL: no emulator, counter only): 50 windows | avg 60.00 fps | ~0 dropped frames/min | hitch-free windows 100% | 50ms+ hitches in 0% | canvas 
+  -   [cfg] Run F core=unknown threads=true opts={} ra={} tuned=false
+- **Run G** (2026-10-14 09:00) - WebGL2 + VSync off
+  - settings: overlay=True, threads=True, opts={"webgl2Enabled":"enabled","vsync":"disabled"}, retroarch={}
+  - Run G (WebGL2 + VSync off): 64 windows | avg 58.70 fps | ~78 dropped frames/min | hitch-free windows 6% | 50ms+ hitches in 6% | canvas 1920x1080
+  -   [cfg] Run G core=snes9x-thread-wasm.data threads=true opts={"webgl2Enabled":"enabled","vsync":"disabled"} ra={} tuned=false
+- **Run H** (2026-10-14 09:03) - WebGL2 + linear audio interp
+  - settings: overlay=True, threads=True, opts={"webgl2Enabled":"enabled","snes9x_audio_interpolation":"linear"}, retroarch={}
+  - Run H (WebGL2 + linear audio interp): 64 windows | avg 58.21 fps | ~107 dropped frames/min | hitch-free windows 14% | 50ms+ hitches in 8% | canvas 1920x1080
+  -   [cfg] Run H core=snes9x-thread-wasm.data threads=true opts={"webgl2Enabled":"enabled","snes9x_audio_interpolation":"linear"} ra={} tuned=false
+- **Run I** (2026-10-14 09:07) - Run E settings + frame-cost probe
+  - settings: overlay=True, threads=True, opts={"webgl2Enabled":"enabled"}, retroarch={}
+  - Run I (Run E settings + frame-cost probe): 64 windows | avg 58.50 fps | ~90 dropped frames/min | hitch-free windows 30% | 50ms+ hitches in 8% | canvas 1920x1080
+  -   [cfg] Run I core=snes9x-thread-wasm.data threads=true opts={"webgl2Enabled":"enabled"} ra={} tuned=false
+  - cost: 65 windows | rAF callbacks/2s avg 406 | p50 0.0ms | p95 16.5ms | max 49.2ms | callbacks >12ms: 14.2% | longtasks 1 (51ms total)
+- **Run J** (2026-10-14 09:10) - WebGL2, NON-threaded core
+  - settings: overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={}
+  - Run J (WebGL2, NON-threaded core): 64 windows | avg 58.87 fps | ~68 dropped frames/min | hitch-free windows 41% | 50ms+ hitches in 2% | canvas 1920x1080
+  -   [cfg] Run J core=snes9x-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={} tuned=false
+  - cost: 65 windows | rAF callbacks/2s avg 420 | p50 0.0ms | p95 14.7ms | max 42.3ms | callbacks >12ms: 13.8% | longtasks 0 (0ms total)
+- **Run K** (2026-10-14 09:13) - WebGL1 legacy, non-threaded
+  - settings: overlay=True, threads=False, opts={"webgl2Enabled":"disabled"}, retroarch={}
+  - Run K (WebGL1 legacy, non-threaded): 64 windows | avg 59.14 fps | ~51 dropped frames/min | hitch-free windows 34% | 50ms+ hitches in 2% | canvas 1920x1080
+  -   [cfg] Run K core=snes9x-legacy-wasm.data threads=false opts={"webgl2Enabled":"disabled"} ra={} tuned=false
+  - cost: 65 windows | rAF callbacks/2s avg 403 | p50 0.0ms | p95 14.7ms | max 29.9ms | callbacks >12ms: 17.0% | longtasks 0 (0ms total)
+- **Run L** (2026-10-14 09:16) - Run K + audio latency 128ms
+  - settings: overlay=True, threads=False, opts={"webgl2Enabled":"disabled"}, retroarch={"audio_latency":128}
+  - Run L (Run K + audio latency 128ms): 64 windows | avg 58.65 fps | ~81 dropped frames/min | hitch-free windows 39% | 50ms+ hitches in 3% | canvas 1920x1080
+  -   [cfg] Run L core=snes9x-legacy-wasm.data threads=false opts={"webgl2Enabled":"disabled"} ra={"audio_latency":128} tuned=true
+  - cost: 65 windows | rAF callbacks/2s avg 351 | p50 0.1ms | p95 14.9ms | max 49.2ms | callbacks >12ms: 26.0% | longtasks 1 (51ms total)
+- **Run M** (2026-10-14 09:20) - repeat of Run K (WebGL1, non-threaded)
+  - settings: overlay=True, threads=False, opts={"webgl2Enabled":"disabled"}, retroarch={}
+  - Run M (repeat of Run K (WebGL1, non-threaded)): 64 windows | avg 58.78 fps | ~74 dropped frames/min | hitch-free windows 25% | 50ms+ hitches in 2% | canvas 1920x1080
+  -   [cfg] Run M core=snes9x-legacy-wasm.data threads=false opts={"webgl2Enabled":"disabled"} ra={} tuned=false
+  - cost: 65 windows | rAF callbacks/2s avg 441 | p50 0.0ms | p95 15.0ms | max 28.6ms | callbacks >12ms: 11.7% | longtasks 0 (0ms total)
+- **Run N** (2026-10-14 09:23) - repeat of Run J (WebGL2, non-threaded)
+  - settings: overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={}
+  - Run N (repeat of Run J (WebGL2, non-threaded)): 64 windows | avg 59.12 fps | ~53 dropped frames/min | hitch-free windows 47% | 50ms+ hitches in 2% | canvas 1920x1080
+  -   [cfg] Run N core=snes9x-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={} tuned=false
+  - cost: 65 windows | rAF callbacks/2s avg 438 | p50 0.0ms | p95 14.4ms | max 55.5ms | callbacks >12ms: 11.3% | longtasks 1 (57ms total)
+- **Run O** (2026-10-14 09:26) - WebGL2 non-threaded, timing probe off
+  - settings: overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={}
+  - Run O (WebGL2 non-threaded, timing probe off): 64 windows | avg 59.02 fps | ~59 dropped frames/min | hitch-free windows 48% | 50ms+ hitches in 2% | canvas 1920x1080
+  -   [cfg] Run O core=snes9x-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={} tuned=false
+  - cost: no data
+- **Run P** (2026-10-14 09:29) - Run O + EmulatorJS UI hidden
+  - settings: overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={}
+  - Run P (Run O + EmulatorJS UI hidden): 64 windows | avg 59.38 fps | ~38 dropped frames/min | hitch-free windows 52% | 50ms+ hitches in 2% | canvas 1920x1080
+  -   [cfg] Run P core=snes9x-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={} tuned=false
+  - cost: 65 windows | rAF callbacks/2s avg 422 | p50 0.0ms | p95 14.1ms | max 31.8ms | callbacks >12ms: 13.3% | longtasks 0 (0ms total)
+- **Run Q** (2026-10-14 09:32) - Run P + audio out rate 32000
+  - settings: overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={"audio_out_rate":32000}
+  - Run Q (Run P + audio out rate 32000): 59 windows | avg 59.36 fps | ~38 dropped frames/min | hitch-free windows 47% | 50ms+ hitches in 2% | canvas 1920x1080
+  -   [cfg] Run Q core=snes9x-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={"audio_out_rate":32000} tuned=true
+  - cost: 61 windows | rAF callbacks/2s avg 456 | p50 0.0ms | p95 13.7ms | max 28.0ms | callbacks >12ms: 8.6% | longtasks 0 (0ms total)
+- **Run R** (2026-10-14 09:36) - BEST: WebGL2, non-threaded, UI hidden, 32kHz audio
+  - settings: overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={"audio_out_rate":32000}
+  - Run R (BEST: WebGL2, non-threaded, UI hidden, 32kHz audio): 64 windows | avg 58.88 fps | ~67 dropped frames/min | hitch-free windows 28% | 50ms+ hitches in 3% | canvas 1920x1080
+  -   [cfg] Run R core=snes9x-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={"audio_out_rate":32000} tuned=true
+  - cost: no data
+
+## Summary (2026-10-14, after Run R)
+- **Control (Run F, no emulator): 60.00 fps, 0 drops, 100% hitch-free** -> the TV/browser/overlay are fine; all drops come from the emulator's CPU time on the main thread.
+- Emulator frame cost on this TV: p95 ~14 ms vs 16.7 ms budget (Runs I-Q). It is CPU-bound and right at the edge.
+- What helped: non-threaded core (-~35 drops/min vs threaded), WebGL2 core, hiding EmulatorJS's on-screen UI, 32 kHz audio output (lower CPU per frame).
+- No effect / worse: resolution (960x540), hiding the FPS counter, VSync off, linear audio interpolation, nearest resampler, 128 ms audio latency.
+- Best settings (Runs N-R, all WebGL2 + non-threaded): avg ~59.1 fps, ~38-67 dropped frames/min (~1-2% of frames), 28-52% hitch-free windows, 50ms+ hitches in only 2-3% of windows. Run-to-run noise is about +/-25 drops/min.
+- **Target (>=90% hitch-free) NOT reached** with the stock Snes9x core. Snes9x in this build has no frameskip option, so a true 50/45/30 fps lock at correct game speed is not available.
+- Next big lever: a lighter core (Snes9x 2005/2002) compiled for EmulatorJS with Emscripten - needs the user's OK to download the toolchain.
+- TV currently has Run R installed (best settings).
+- **Run S** (2026-10-14 12:16) - NEW CORE snes9x2005, WebGL2, non-threaded, UI hidden, 32kHz
+  - settings: core=snes9x2005, overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={"audio_out_rate":32000}
+  - Run S (NEW CORE snes9x2005, WebGL2, non-threaded, UI hidden, 32kHz): 49 windows | avg 59.96 fps | ~2 dropped frames/min | hitch-free windows 92% | 50ms+ hitches in 0% | canvas 1920x1080
+  -   [cfg] Run S core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={"audio_out_rate":32000} tuned=true
+  - cost: 50 windows | rAF callbacks/2s avg 484 | p50 0.0ms | p95 7.6ms | max 21.4ms | callbacks >12ms: 0.2% | longtasks 0 (0ms total)
+- **Run T** (2026-10-14 12:19) - snes9x2005 repeat (probe off) - confirm
+  - settings: core=snes9x2005, overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={"audio_out_rate":32000}
+  - Run T (snes9x2005 repeat (probe off) - confirm): 65 windows | avg 60.00 fps | ~0 dropped frames/min | hitch-free windows 100% | 50ms+ hitches in 0% | canvas 1920x1080
+  -   [cfg] Run T core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={"audio_out_rate":32000} tuned=true
+  - cost: no data
+- **Run U** (2026-10-14 12:22) - snes9x2005, default 48kHz audio
+  - settings: core=snes9x2005, overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={}
+  - Run U (snes9x2005, default 48kHz audio): 64 windows | avg 59.99 fps | ~0 dropped frames/min | hitch-free windows 98% | 50ms+ hitches in 0% | canvas 1920x1080
+  -   [cfg] Run U core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={} tuned=false
+  - cost: no data
+- **Run V** (2026-10-14 12:25) - snes9x2005, 48kHz, EJS menu UI back on
+  - settings: core=snes9x2005, overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={}
+  - Run V (snes9x2005, 48kHz, EJS menu UI back on): 64 windows | avg 60.00 fps | ~0 dropped frames/min | hitch-free windows 100% | 50ms+ hitches in 0% | canvas 1920x1080
+  -   [cfg] Run V core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={} tuned=false
+  - cost: no data
+
+## Result with the lighter core (Runs S-V)
+- Built **Snes9x 2005** (libretro/snes9x2005, -O3) for EmulatorJS in WSL Ubuntu: emsdk 3.1.74 and the EmulatorJS RetroArch fork pinned to 6dd43539, the same era as the stock 4.2.3 core. Output: `data/cores/snes9x2005-wasm.data`.
+- Emulator frame cost fell from about 14 ms to about 7.6 ms at the 95th percentile. Now 60.00 fps, 0 dropped frames/min, 98-100% hitch-free windows. This matches the no-emulator control (Run F).
+- **Final = Run V:** snes9x2005, WebGL2, non-threaded, 48 kHz audio (default), EmulatorJS menu buttons visible.
+- To rebuild: `wsl bash <scratchpad>/wsl/build-core.sh snes9x2005 ~/ejs/snes9x2005`. A clean PATH is needed because the Windows PATH has a stray quote that breaks `emsdk_env.sh`.
