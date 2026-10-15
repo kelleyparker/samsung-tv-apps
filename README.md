@@ -60,6 +60,14 @@ The stock EmulatorJS FCEUmm core is in `snes/data/cores/fceumm-wasm.data`. To pl
 | View / Menu | Select / Start | Select / Start |
 | D-pad or left stick | D-pad | D-pad |
 
+### Remote control (debug)
+
+`snes/js/remote.js` lets the PC drive the game. It's off unless `RUN_REMOTE = true` is set in `snes/js/run.js`. When on:
+
+- The TV polls `serve.py` (port `RUN_REMOTE_PORT`) for commands: `run` (hold buttons for a number of frames, then pause), `pause`, `play`, `save`/`load` (in-memory save states), `reset`.
+- It uploads screenshots and save states to `snes-server/remote/`.
+- Queue commands with `POST /cmd` and a JSON body, for example `{"op":"run","seq":[{"n":30,"b":["RIGHT","Y"]}],"shot":true}`.
+
 ### ROM folders
 
 ROMs are git-ignored, and only the empty folders are in the repo:

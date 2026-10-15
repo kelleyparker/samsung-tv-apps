@@ -24,5 +24,6 @@ author-signature.xml
 signature*.xml
 
 # Misc
+snes-server/remote/
 __pycache__/
 *.log
