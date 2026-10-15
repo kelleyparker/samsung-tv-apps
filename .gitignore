@@ -1,8 +1,14 @@
-# ROMs are copyrighted - supply your own
+# ROMs are copyrighted - supply your own (only the folder skeletons are tracked)
 snes/roms/*
 !snes/roms/.gitkeep
+!snes/roms/README.md
+snes-server/roms/*
+!snes-server/roms/.gitkeep
+!snes-server/roms/README.md
 *.sfc
 *.smc
+*.nes
+*.fds
 
 # Personal media (photo icon and video) - add your own icon.png / video/clip.mp4
 app1/icon.png

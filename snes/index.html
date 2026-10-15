@@ -19,8 +19,8 @@
         EJS_player = '#game';
         EJS_core = window.RUN_CORE || 'snes9x';
         EJS_pathtodata = 'data/';
-        EJS_gameUrl = 'roms/smw.zip';
-        EJS_gameName = 'Super Mario World';
+        EJS_gameUrl = window.RUN_ROM || 'roms/smw.zip';
+        EJS_gameName = window.RUN_GAME || 'Super Mario World';
         EJS_startOnLoaded = true;
         EJS_threads = (window.RUN_THREADS !== false);
         EJS_defaultOptions = window.RUN_OPTS || {};
@@ -36,6 +36,8 @@
         EJS_disableDatabases = true;
     </script>
     <script src="js/tune.js"></script>
+    <script src="js/warmup.js"></script>
+    <script src="js/gamepad.js"></script>
     <script>
         // RUN_NOEMU (control runs only): skip the emulator to measure the TV's own frame pacing
         if (!window.RUN_NOEMU) { document.write('<script src="data/loader.js"><\/script>'); }

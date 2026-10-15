@@ -123,3 +123,169 @@ Metric: after a 20s warm-up, ~2s windows of requestAnimationFrame timing reporte
 - Emulator frame cost fell from about 14 ms to about 7.6 ms at the 95th percentile. Now 60.00 fps, 0 dropped frames/min, 98-100% hitch-free windows. This matches the no-emulator control (Run F).
 - **Final = Run V:** snes9x2005, WebGL2, non-threaded, 48 kHz audio (default), EmulatorJS menu buttons visible.
 - To rebuild: `wsl bash <scratchpad>/wsl/build-core.sh snes9x2005 ~/ejs/snes9x2005`. A clean PATH is needed because the Windows PATH has a stray quote that breaks `emsdk_env.sh`.
+- **Correction (added later):** Run V's "0 dropped frames" only counted display refreshes (rAF). Run W added a game-frame counter, which showed the game itself ran at only about 50 fps, with 610 repeated frames/min. The real fix was audio: `audio_sync` off (Run X), then sync on with `audio_latency` 256 (Run AA), then the 20 s warm-up cover and frameskip `manual` 15%. See the final summary at the end.
+- **Run W** (2026-10-14 17:27) - snes9x2005 baseline + game-frame counter
+  - settings: core=snes9x2005, overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={}
+  - Run W (snes9x2005 baseline + game-frame counter): 50 windows | avg 59.98 fps | ~1 dropped frames/min | hitch-free windows 96% | 50ms+ hitches in 0% | canvas 1920x1080
+  -   GAME frames: avg 49.87 fps | repeated 610/min | skipped 0/min | windows with no repeats/skips 2%
+  -   [cfg] Run W core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={} tuned=false
+  - cost: no data
+- **Run X** (2026-10-14 17:30) - snes9x2005, audio_sync off
+  - settings: core=snes9x2005, overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={"audio_sync":"false"}
+  - Run X (snes9x2005, audio_sync off): 49 windows | avg 59.94 fps | ~4 dropped frames/min | hitch-free windows 88% | 50ms+ hitches in 0% | canvas 1920x1080
+  -   GAME frames: avg 59.94 fps | repeated 0/min | skipped 0/min | windows with no repeats/skips 100%
+  -   [cfg] Run X core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={"audio_sync":"false"} tuned=true
+  - cost: no data
+- **Run Y** (2026-10-14 17:35) - ZELDA, snes9x2005, audio_sync off
+  - settings: game=Zelda - A Link to the Past, core=snes9x2005, overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={"audio_sync":"false"}
+  - Run Y (ZELDA, snes9x2005, audio_sync off): 50 windows | avg 59.97 fps | ~2 dropped frames/min | hitch-free windows 94% | 50ms+ hitches in 0% | canvas 1920x1080
+  -   GAME frames: avg 59.97 fps | repeated 0/min | skipped 0/min | windows with no repeats/skips 100%
+  -   [cfg] Run Y core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={"audio_sync":"false"} tuned=true
+  - cost: no data
+  - audio: ctx 44100 Hz (running) | scheduled 0.903 s per s | ctx clock 1.000x | underrun gaps 623/min | windows with gaps 100% | buffered ahead avg 22 ms (min -15)
+- **Run Z** (2026-10-14 17:37) - SMW, audio_sync ON, audio_latency 128
+  - settings: game=Super Mario World, core=snes9x2005, overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={"audio_latency":128}
+  - Run Z (SMW, audio_sync ON, audio_latency 128): 49 windows | avg 59.91 fps | ~6 dropped frames/min | hitch-free windows 84% | 50ms+ hitches in 2% | canvas 1920x1080
+  -   GAME frames: avg 59.90 fps | repeated 1/min | skipped 0/min | windows with no repeats/skips 98%
+  -   [cfg] Run Z core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={"audio_latency":128} tuned=true
+  - cost: no data
+  - audio: ctx 44100 Hz (running) | scheduled 1.000 s per s | ctx clock 1.000x | underrun gaps 21/min | windows with gaps 19% | buffered ahead avg 62 ms (min 29)
+- **Run AA** (2026-10-14 17:40) - SMW, audio_sync ON, audio_latency 256
+  - settings: game=Super Mario World, core=snes9x2005, overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={"audio_latency":256}
+  - Run AA (SMW, audio_sync ON, audio_latency 256): 49 windows | avg 59.86 fps | ~9 dropped frames/min | hitch-free windows 88% | 50ms+ hitches in 4% | canvas 1920x1080
+  -   GAME frames: avg 59.86 fps | repeated 0/min | skipped 0/min | windows with no repeats/skips 100%
+  -   [cfg] Run AA core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={"audio_latency":256} tuned=true
+  - cost: no data
+  - audio: ctx 44100 Hz (running) | scheduled 1.000 s per s | ctx clock 1.000x | underrun gaps 1/min | windows with gaps 2% | buffered ahead avg 98 ms (min 58)
+- **Run AB** (2026-10-14 18:37) - RECHECK stock snes9x, non-threaded, audio_latency 256
+  - settings: game=Super Mario World, core=snes9x, overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={"audio_latency":256}
+  - Run AB (RECHECK stock snes9x, non-threaded, audio_latency 256): 49 windows | avg 58.52 fps | ~89 dropped frames/min | hitch-free windows 49% | 50ms+ hitches in 6% | canvas 1920x1080
+  -   GAME frames: avg 58.52 fps | repeated 0/min | skipped 0/min | windows with no repeats/skips 100%
+  -   [cfg] Run AB core=snes9x-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={"audio_latency":256} tuned=true
+  - cost: no data
+  - audio: ctx 44100 Hz (running) | scheduled 0.996 s per s | ctx clock 1.000x | underrun gaps 34/min | windows with gaps 40% | buffered ahead avg 56 ms (min 17)
+- **Run AC** (2026-10-14 18:53) - Zelda ALttP, best config (2005, sync on, latency 256)
+  - settings: game=Zelda - A Link to the Past, core=snes9x2005, overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={"audio_latency":256}
+  - Run AC (Zelda ALttP, best config (2005, sync on, latency 256)): 49 windows | avg 59.95 fps | ~3 dropped frames/min | hitch-free windows 90% | 50ms+ hitches in 0% | canvas 1920x1080
+  -   GAME frames: avg 59.95 fps | repeated 0/min | skipped 0/min | windows with no repeats/skips 100%
+  -   [cfg] Run AC core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={"audio_latency":256} tuned=true
+  - cost: no data
+  - audio: ctx 44100 Hz (running) | scheduled 1.001 s per s | ctx clock 1.000x | underrun gaps 0/min | windows with gaps 0% | buffered ahead avg 79 ms (min 49)
+- **Run AD** (2026-10-14 19:00) - Super Mario Kart, best config (2005, sync on, latency 256)
+  - settings: game=Super Mario Kart, core=snes9x2005, overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={"audio_latency":256}
+  - Run AD (Super Mario Kart, best config (2005, sync on, latency 256)): 49 windows | avg 59.89 fps | ~7 dropped frames/min | hitch-free windows 80% | 50ms+ hitches in 0% | canvas 1920x1080
+  -   GAME frames: avg 59.89 fps | repeated 0/min | skipped 0/min | windows with no repeats/skips 100%
+  -   [cfg] Run AD core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={"audio_latency":256} tuned=true
+  - cost: no data
+  - audio: ctx 44100 Hz (running) | scheduled 1.000 s per s | ctx clock 0.999x | underrun gaps 0/min | windows with gaps 0% | buffered ahead avg 92 ms (min 49)
+- **Run AE** (2026-10-14 19:04) - Mario Kart, same as AD + per-frame cost probe
+  - settings: game=Super Mario Kart, core=snes9x2005, overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={"audio_latency":256}
+  - Run AE (Mario Kart, same as AD + per-frame cost probe): 49 windows | avg 59.94 fps | ~4 dropped frames/min | hitch-free windows 88% | 50ms+ hitches in 0% | canvas 1920x1080
+  -   GAME frames: avg 59.94 fps | repeated 0/min | skipped 0/min | windows with no repeats/skips 100%
+  -   [cfg] Run AE core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={"audio_latency":256} tuned=true
+  - cost: 50 windows | rAF callbacks/2s avg 359 | p50 0.1ms | p95 9.1ms | max 18.6ms | callbacks >12ms: 0.2% | longtasks 0 (0ms total)
+  - audio: ctx 44100 Hz (running) | scheduled 1.000 s per s | ctx clock 1.000x | underrun gaps 0/min | windows with gaps 0% | buffered ahead avg 92 ms (min 41)
+- **Run AF** (2026-10-14 19:10) - Mario Kart, 20s muted warm-up behind loading screen, then restart
+  - settings: game=Super Mario Kart, core=snes9x2005, warmup=20s, overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={"audio_latency":256}
+  - Run AF (Mario Kart, 20s muted warm-up behind loading screen, then restart): 53 windows | avg 59.91 fps | ~6 dropped frames/min | hitch-free windows 87% | 50ms+ hitches in 2% | canvas 1920x1080
+  -   GAME frames: avg 59.91 fps | repeated 0/min | skipped 0/min | windows with no repeats/skips 100%
+  -   [cfg] Run AF core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={"audio_latency":256} tuned=true
+  - cost: no data
+  - audio: ctx 44100 Hz (running) | scheduled 1.000 s per s | ctx clock 1.000x | underrun gaps 0/min | windows with gaps 2% | buffered ahead avg 81 ms (min 55)
+  - Run AF startup:  8 windows | ~8 dropped/min | hitch-free 88% | worst 33ms
+  - Run AF steady : 56 windows | ~5 dropped/min | hitch-free 88% | worst 50ms
+- **Run AG** (2026-10-14 19:32) - Yoshi's Island (Super FX 2), best config + 20s warm-up
+  - **INVALID:** the apostrophe in "Yoshi's" broke the generated js/run.js, so the TV ran the stock default (Super Mario World on the threaded legacy snes9x core, no settings). Fixed in run-test.ps1 and rerun as Run AH. The numbers below are that stock default, not Yoshi's Island.
+  - settings: game=Yoshi's Island, core=snes9x2005, warmup=20s, overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={"audio_latency":256}
+  - Run AG (Yoshi's Island (Super FX 2), best config + 20s warm-up): 65 windows | avg 58.03 fps | ~118 dropped frames/min | hitch-free windows 14% | 50ms+ hitches in 6% | canvas 1920x1080
+  -   GAME frames: avg 40.99 fps | repeated 1,029/min | skipped 0/min | windows with no repeats/skips 5%
+  -   [cfg] ? core=snes9x-thread-legacy-wasm.data threads=true opts={} ra={} tuned=false
+  - cost: 65 windows | rAF callbacks/2s avg 427 | p50 0.0ms | p95 16.8ms | max 58.9ms | callbacks >12ms: 12.9% | longtasks 1 (61ms total)
+  - audio: ctx 44100 Hz (running) | scheduled 0.880 s per s | ctx clock 1.000x | underrun gaps 552/min | windows with gaps 100% | buffered ahead avg 25 ms (min 3)
+  - Run AG: no data
+- **Run AH** (2026-10-14 19:36) - Yoshi's Island (Super FX 2), best config + 20s warm-up (rerun of AG)
+  - settings: game=Yoshi's Island, core=snes9x2005, warmup=20s, overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={"audio_latency":256}
+  - Run AH (Yoshi's Island (Super FX 2), best config + 20s warm-up (rerun of AG)): 53 windows | avg 59.96 fps | ~2 dropped frames/min | hitch-free windows 92% | 50ms+ hitches in 0% | canvas 1920x1080
+  -   GAME frames: avg 59.96 fps | repeated 0/min | skipped 0/min | windows with no repeats/skips 100%
+  -   [cfg] Run AH core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={"audio_latency":256} tuned=true
+  - cost: 65 windows | rAF callbacks/2s avg 359 | p50 0.1ms | p95 9.0ms | max 71.4ms | callbacks >12ms: 0.1% | longtasks 1 (72ms total)
+  - audio: ctx 44100 Hz (running) | scheduled 1.000 s per s | ctx clock 1.000x | underrun gaps 0/min | windows with gaps 2% | buffered ahead avg 92 ms (min 20)
+  - Run AH startup:  8 windows | ~15 dropped/min | hitch-free 88% | worst 67ms
+  - Run AH steady : 55 windows | ~2 dropped/min | hitch-free 93% | worst 33ms
+- **Run AI** (2026-10-14 19:39) - Super Mario RPG (SA-1), best config + 20s warm-up
+  - settings: game=Super Mario RPG, core=snes9x2005, warmup=20s, overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={"audio_latency":256}
+  - Run AI (Super Mario RPG (SA-1), best config + 20s warm-up): 53 windows | avg 59.02 fps | ~59 dropped frames/min | hitch-free windows 70% | 50ms+ hitches in 9% | canvas 1920x1080
+  -   GAME frames: avg 59.02 fps | repeated 0/min | skipped 0/min | windows with no repeats/skips 100%
+  -   [cfg] Run AI core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={"audio_latency":256} tuned=true
+  - cost: 64 windows | rAF callbacks/2s avg 355 | p50 0.1ms | p95 9.8ms | max 40.0ms | callbacks >12ms: 0.7% | longtasks 0 (0ms total)
+  - audio: ctx 44100 Hz (running) | scheduled 0.995 s per s | ctx clock 0.999x | underrun gaps 18/min | windows with gaps 11% | buffered ahead avg 71 ms (min 17)
+  - Run AI startup:  8 windows | ~0 dropped/min | hitch-free 100% | worst 17ms
+  - Run AI steady : 55 windows | ~57 dropped/min | hitch-free 71% | worst 83ms
+- **Run AJ** (2026-10-14 19:45) - Super Mario RPG (SA-1), best config + 20s warm-up + core frameskip auto
+  - settings: game=Super Mario RPG, core=snes9x2005, warmup=20s, overlay=True, threads=False, opts={"webgl2Enabled":"enabled","snes9x_2005_frameskip":"auto"}, retroarch={"audio_latency":256}
+  - Run AJ (Super Mario RPG (SA-1), best config + 20s warm-up + core frameskip auto): 53 windows | avg 59.85 fps | ~9 dropped frames/min | hitch-free windows 75% | 50ms+ hitches in 0% | canvas 1920x1080
+  -   GAME frames: avg 40.70 fps | repeated 1,158/min | skipped 0/min | windows with no repeats/skips 17%
+  -   [cfg] Run AJ core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled","snes9x_2005_frameskip":"auto"} ra={"audio_latency":256} tuned=true
+  - cost: 64 windows | rAF callbacks/2s avg 359 | p50 0.1ms | p95 9.8ms | max 34.6ms | callbacks >12ms: 0.6% | longtasks 0 (0ms total)
+  - audio: ctx 44100 Hz (running) | scheduled 1.000 s per s | ctx clock 1.000x | underrun gaps 0/min | windows with gaps 2% | buffered ahead avg 71 ms (min 35)
+  - Run AJ startup:  8 windows | ~4 dropped/min | hitch-free 88% | worst 33ms
+  - Run AJ steady : 55 windows | ~9 dropped/min | hitch-free 76% | worst 33ms
+- **Run AK** (2026-10-14 19:48) - Super Mario RPG (SA-1), best config + 20s warm-up + frameskip manual, threshold 15%
+  - settings: game=Super Mario RPG, core=snes9x2005, warmup=20s, overlay=True, threads=False, opts={"webgl2Enabled":"enabled","snes9x_2005_frameskip":"manual","snes9x_2005_frameskip_threshold":"15"}, retroarch={"audio_latency":256}
+  - Run AK (Super Mario RPG (SA-1), best config + 20s warm-up + frameskip manual, threshold 15%): 53 windows | avg 59.90 fps | ~6 dropped frames/min | hitch-free windows 85% | 50ms+ hitches in 0% | canvas 1920x1080
+  -   GAME frames: avg 59.67 fps | repeated 14/min | skipped 0/min | windows with no repeats/skips 85%
+  -   [cfg] Run AK core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled","snes9x_2005_frameskip":"manual","snes9x_2005_frameskip_threshold":"15"} ra={"audio_latency":256} tuned=true
+  - cost: 65 windows | rAF callbacks/2s avg 359 | p50 0.1ms | p95 9.6ms | max 18.6ms | callbacks >12ms: 0.5% | longtasks 0 (0ms total)
+  - audio: ctx 44100 Hz (running) | scheduled 1.000 s per s | ctx clock 1.000x | underrun gaps 0/min | windows with gaps 0% | buffered ahead avg 65 ms (min 29)
+  - Run AK startup:  8 windows | ~4 dropped/min | hitch-free 88% | worst 33ms
+  - Run AK steady : 55 windows | ~6 dropped/min | hitch-free 85% | worst 33ms
+- **Run AL** (2026-10-14 19:54) - Mega Man X2 (Cx4), best config + 20s warm-up + frameskip manual 15%
+  - settings: game=Mega Man X2, core=snes9x2005, warmup=20s, overlay=True, threads=False, opts={"webgl2Enabled":"enabled","snes9x_2005_frameskip":"manual","snes9x_2005_frameskip_threshold":"15"}, retroarch={"audio_latency":256}
+  - Run AL (Mega Man X2 (Cx4), best config + 20s warm-up + frameskip manual 15%): 53 windows | avg 59.92 fps | ~5 dropped frames/min | hitch-free windows 83% | 50ms+ hitches in 0% | canvas 1920x1080
+  -   GAME frames: avg 59.66 fps | repeated 15/min | skipped 0/min | windows with no repeats/skips 94%
+  -   [cfg] Run AL core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled","snes9x_2005_frameskip":"manual","snes9x_2005_frameskip_threshold":"15"} ra={"audio_latency":256} tuned=true
+  - cost: 65 windows | rAF callbacks/2s avg 359 | p50 0.1ms | p95 8.5ms | max 15.5ms | callbacks >12ms: 0.1% | longtasks 0 (0ms total)
+  - audio: ctx 44100 Hz (running) | scheduled 1.001 s per s | ctx clock 1.000x | underrun gaps 2/min | windows with gaps 2% | buffered ahead avg 64 ms (min 26)
+  - Run AL startup:  8 windows | ~4 dropped/min | hitch-free 88% | worst 33ms
+  - Run AL steady : 56 windows | ~5 dropped/min | hitch-free 84% | worst 33ms
+- **Run AM** (2026-10-14 19:57) - Star Fox (Super FX), best config + 20s warm-up + frameskip manual 15%
+  - settings: game=Star Fox, core=snes9x2005, warmup=20s, overlay=True, threads=False, opts={"webgl2Enabled":"enabled","snes9x_2005_frameskip":"manual","snes9x_2005_frameskip_threshold":"15"}, retroarch={"audio_latency":256}
+  - Run AM (Star Fox (Super FX), best config + 20s warm-up + frameskip manual 15%): 53 windows | avg 59.56 fps | ~26 dropped frames/min | hitch-free windows 77% | 50ms+ hitches in 0% | canvas 1920x1080
+  -   GAME frames: avg 58.40 fps | repeated 70/min | skipped 0/min | windows with no repeats/skips 79%
+  -   [cfg] Run AM core=snes9x2005-wasm.data threads=false opts={"webgl2Enabled":"enabled","snes9x_2005_frameskip":"manual","snes9x_2005_frameskip_threshold":"15"} ra={"audio_latency":256} tuned=true
+  - cost: 65 windows | rAF callbacks/2s avg 357 | p50 0.1ms | p95 14.2ms | max 41.0ms | callbacks >12ms: 6.6% | longtasks 0 (0ms total)
+  - audio: ctx 44100 Hz (running) | scheduled 0.999 s per s | ctx clock 1.000x | underrun gaps 12/min | windows with gaps 11% | buffered ahead avg 61 ms (min 23)
+  - Run AM startup:  8 windows | ~23 dropped/min | hitch-free 50% | worst 33ms
+  - Run AM steady : 56 windows | ~26 dropped/min | hitch-free 77% | worst 33ms
+- **Run AN** (2026-10-14 20:13) - NES: Battletoads (mapper 7 AxROM), fceumm + 20s warm-up
+  - settings: game=Battletoads, core=fceumm, warmup=20s, overlay=True, threads=False, opts={"webgl2Enabled":"enabled"}, retroarch={"audio_latency":256}
+  - Run AN (NES: Battletoads (mapper 7 AxROM), fceumm + 20s warm-up): 28 windows | avg 59.88 fps | ~8 dropped frames/min | hitch-free windows 79% | 50ms+ hitches in 0% | canvas 1920x1080
+  -   GAME frames: avg 59.88 fps | repeated 0/min | skipped 0/min | windows with no repeats/skips 100%
+  -   [cfg] Run AN core=fceumm-wasm.data threads=false opts={"webgl2Enabled":"enabled"} ra={"audio_latency":256} tuned=true
+  - cost: 40 windows | rAF callbacks/2s avg 359 | p50 0.1ms | p95 8.5ms | max 14.8ms | callbacks >12ms: 0.0% | longtasks 0 (0ms total)
+  - audio: ctx 44100 Hz (running) | scheduled 1.000 s per s | ctx clock 1.000x | underrun gaps 2/min | windows with gaps 3% | buffered ahead avg 73 ms (min 29)
+  - Run AN startup:  8 windows | ~11 dropped/min | hitch-free 63% | worst 33ms
+  - Run AN steady : 31 windows | ~9 dropped/min | hitch-free 74% | worst 33ms
+- **Runs AO-AS** (2026-10-14 20:15-20:30): NES batch, fceumm + 20 s warm-up, 120 s each. Every run showed 0 repeated and 0 skipped game frames, and the slowest frame took 15-22 ms.
+
+  | Run | Game (mapper) | fps | Drops/min | Hitch-free | Frame cost p95 | Audio gaps/min |
+  |---|---|---|---|---|---|---|
+  | AO | Bomberman (0 NROM) | 59.96 | 2 | 92% | 8.4 ms | 0 |
+  | AP | Blaster Master (1 MMC1, dirty header) | 59.89 | 6 | 82% | 8.2 ms | 0 |
+  | AQ | 1943 (2 UxROM) | 59.91 | 6 | 82% | 8.2 ms | 0 |
+  | AR | Alpha Mission (3 CNROM) | 59.88 | 7 | 76% | 8.6 ms | 0 |
+  | AS | Bad Dudes (4 MMC3) | no fps data | - | - | 8.3 ms | 0 |
+
+  - Run AS went silent on the fps beacon mid-run, when the Xbox controller was being paired. The batch stopped there. Castlevania III, After Burner, Batman: Return of the Joker and Big Nose (planned as AT-AW) haven't been run yet.
+- **Run AX** (2026-10-14 20:34): Xbox Wireless Controller test on SMW. The TV reports `"Xbox Wireless Controller" (STANDARD GAMEPAD Vendor: 045e Product: 0b13)` (Series X|S, model 1914) with `mapping=standard`, 17 buttons and 4 axes. Every button and axis came through as expected: A/B/X/Y = 0-3, LB/RB = 4/5, LT/RT = 6/7 (analog), View/Menu = 8/9, D-pad = 12-15, left stick = axes 0/1, right stick = axes 2/3. `js/gamepad.js` maps them by position.
+  - Performance with every press sent as a debug beacon: 59.18 fps, ~49 dropped/min, 21% hitch-free, game frames 57.06 fps (129 repeated/min), 55 audio gaps/min.
+- **Run AY** (2026-10-14 20:42): same as AX, but per-press logging off (`DBG_PADLOG`).
+  - 59.81 fps, ~12 dropped/min, 84% hitch-free, game frames 58.33 fps (89 repeated/min), 7 audio gaps/min, worst gap 67 ms.
+  - So the per-press logging caused most of Run AX's stutter. During active play it's still a bit worse than SMW without a controller (Run AA: 9 dropped/min, 1 audio gap/min).
+  - `[cfg]` now reports touch support: the TV says `maxTouchPoints=20` and supports touch events.
+
+## Final summary (2026-10-14)
+- **SNES settings:** Snes9x 2005 core, WebGL2, no threads, `audio_latency` 256, frameskip `manual` at 15%, 20 s warm-up cover. Most games run at about 59.9 fps with 2-9 drops/min and almost no audio gaps.
+- **Enhancement chips:** SA-1 (Super Mario RPG), Cx4 (Mega Man X2), DSP-1 (Super Mario Kart) and Super FX 2 (Yoshi's Island) all run well. Star Fox (Super FX) is the outlier: 26 drops/min and 12 audio gaps/min. Snes9x 2005 runs each Super FX job to completion in one go, so heavy scenes spike the frame cost (p95 14.2 ms, max 41 ms). A core patch that paces it per scanline is built but parked.
+- **NES:** the stock FCEUmm core runs mappers 0, 1, 2, 3 and 7 at 59.9 fps, with 2-8 drops/min and no repeated game frames.
+- **Controller:** Xbox Series X|S controller over Bluetooth works with the positional map. Keep `DBG_PADLOG` off.
