@@ -16,6 +16,9 @@ app1/photo_full.png
 app1/video/
 spike/icon.png
 
+# Stocks app API keys - copy stocks/js/config.example.js settings into config.js
+stocks/js/config.js
+
 # Tizen build and signing output
 *.wgt
 .buildResult/

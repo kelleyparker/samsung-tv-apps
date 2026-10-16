@@ -7,6 +7,7 @@ Personal Tizen web apps for Samsung TVs (developed on a Samsung Movingstyle), bu
 | `app1/` | **ClockApp** (`ClockApp01.ClockApp`) | Clock over a looping video background. Add your own `icon.png` and `video/clip.mp4` (1080p H.264). |
 | `snes/` | **SNES** (`SnesApp001.SnesApp`) | SNES and NES emulator using [EmulatorJS](https://github.com/EmulatorJS/EmulatorJS) 4.2.3, a custom-built **Snes9x 2005** core and the stock **FCEUmm** NES core. Runs at about 59.9 fps at 1920x1080 (results below). Xbox Wireless Controller supported. Put your own ROMs in `snes/roms/` (see its README). |
 | `spike/` | **Spike** (`SpikeApp01.Spike`) | Capability test for WebAssembly, SharedArrayBuffer, WebGL2, Gamepad API and LAN access. |
+| `stocks/` | **Stocks** (`StocksApp1.Stocks`) | Live stock dashboard: index bar, featured stock with chart and stats, news, analyst ratings, competitors, breaking news and a ticker tape. Needs free Finnhub and Twelve Data keys (see below). |
 | `snes-server/` | `serve.py` | Small CORS file server for the PC (port 8000). Used for debug beacons, and later for streaming ROMs. |
 | `tools/` | `build-core.sh` | Builds a libretro core into an EmulatorJS `*-wasm.data` file (see below). |
 
@@ -14,7 +15,7 @@ Performance tuning history: [`snes-runs.md`](snes-runs.md).
 
 ## SNES app: results on the Movingstyle (UN27LSM7FAXXZA)
 
-1920x1080, about 2½ minutes of play per game. "Drops" are display refreshes that missed their 16.7 ms slot. Audio gaps are audible underruns.
+1920x1080, about 2Â½ minutes of play per game. "Drops" are display refreshes that missed their 16.7 ms slot. Audio gaps are audible underruns.
 
 | Game | Chip / mapper | fps | Drops/min | Hitch-free 2 s windows | Audio gaps/min |
 |---|---|---|---|---|---|
@@ -74,6 +75,53 @@ ROMs are git-ignored, and only the empty folders are in the repo:
 
 - `snes/roms/` holds games packaged into the app. The default is `smw.zip`.
 - `snes-server/roms/` holds games served from the PC by `serve.py`, for a future game picker.
+
+## Stocks app
+
+A 1920x1080 market dashboard. The featured stock rotates through the watchlist every 60 seconds.
+
+**Keys.** Get two free API keys and put them in `stocks/js/config.js`, which is git-ignored:
+
+- [Finnhub](https://finnhub.io/register) supplies live prices over a WebSocket, quotes, company profiles, stats, earnings dates, analyst ratings, peers and news.
+- [Twelve Data](https://twelvedata.com/register) supplies the chart history.
+
+```js
+CONFIG.FINNHUB_KEY = 'your-finnhub-key';
+CONFIG.TWELVEDATA_KEY = 'your-twelvedata-key';
+```
+
+`config.js` can also override `WATCHLIST`, `ROTATE_SEC` and `INDICES`. The defaults are in `stocks/js/config.example.js`. Rebuild and reinstall after any change.
+
+**Demo mode.** With no keys set, the app runs on generated prices and shows "DEMO DATA" next to the market status. To preview it on the PC, run `python -m http.server 8090 --directory stocks` and open `http://localhost:8090/?demo=1`.
+
+**Remote.**
+
+| Key | Action |
+|---|---|
+| Up / Down | Previous / next stock |
+| Left / Right | Chart range (1D ... MAX) |
+| Back | Close the news pop-up, or exit |
+
+**Touch** (the Movingstyle has a touchscreen). On 2024+ Samsung TVs, an app only gets real touches if it opts in. Otherwise the TV's "Floating Menu" turns taps into remote-key presses. `stocks/config.xml` opts in with two metadata keys: `touch.device.support` set to `enable`, and `floating.navigation` set to `false`. Copy both into any other app that needs touch.
+
+| Tap / gesture | Action |
+|---|---|
+| 1D ... MAX | Change the chart range |
+| Quote / Company / News / Financials / Analysis | Switch the panel on the right |
+| A Key Competitor, or a symbol in the ticker tape | Feature that stock. A stock outside the watchlist stays up until rotation resumes. |
+| Top News, a News-tab headline, or Breaking News | Open the full story in a pop-up. Tap again to close it. |
+| Swipe the chart left / right | Next / previous stock |
+
+Any touch or remote key pauses the auto-rotation for 2 minutes, and a "Paused" chip shows while it's paused. Set `CONFIG.PAUSE_SEC` in `config.js` to change how long.
+
+**Limits of the free plans:**
+
+- The index bar shows ETFs (SPY, QQQ, DIA, IWM, VIXY) labelled as their indexes. Their prices are not the actual index values.
+- Bid/Ask and Ex-Dividend Date are paid-only, so the quote panel shows 10-Day Avg Vol, 52W Change and Div Yield in their place.
+- Volume is summed from the chart bars plus live trades, so it's approximate.
+- All TVs share the keys:
+  - Twelve Data allows 800 calls/day and 8/min. That's roughly 150 calls per TV per day, so about 4-5 TVs fit.
+  - Finnhub allows 60 calls/min. Profiles, stats, ratings and peers are cached for the day.
 
 ## Build and install (Tizen CLI)
 

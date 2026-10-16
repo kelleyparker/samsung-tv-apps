@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="http://yourdomain/Stocks" version="1.0.0" viewmodes="maximized">
+    <tizen:application id="StocksApp1.Stocks" package="StocksApp1" required_version="6.0"/>
+    <content src="index.html"/>
+    <feature name="http://tizen.org/feature/screen.size.all"/>
+    <icon src="icon.png"/>
+    <name>Stocks</name>
+    <tizen:profile name="tv-samsung"/>
+    <tizen:privilege name="http://tizen.org/privilege/internet"/>
+    <access origin="*" subdomains="true"/>
+    <!-- Touch screen: without these, the TV turns taps into remote-key presses (Floating Menu, 2024+ models). -->
+    <tizen:metadata key="http://samsung.com/tv/metadata/touch.device.support" value="enable"/>
+    <tizen:metadata key="http://samsung.com/tv/metadata/floating.navigation" value="false"/>
+    <tizen:setting screen-orientation="landscape" context-menu="enable" background-support="disable" encryption="disable" install-location="auto" hwkey-event="enable"/>
+</widget>

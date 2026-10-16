@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1920, initial-scale=1.0">
+    <title>Stocks</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="screen">
+    <!-- 1. Index bar -->
+    <header id="indices"></header>
+
+    <!-- 2. Featured header -->
+    <section id="featured" class="fade">
+        <div id="f-logo" class="logo"></div>
+        <div class="f-id">
+            <div id="f-sym" class="f-sym">--</div>
+            <div id="f-name" class="f-name">&nbsp;</div>
+            <div id="f-meta" class="f-meta">&nbsp;</div>
+        </div>
+        <div class="f-px">
+            <div class="f-px-row">
+                <div id="f-price" class="f-price">--</div>
+                <div class="f-chg">
+                    <div id="f-chg">&nbsp;</div>
+                    <div id="f-pct">&nbsp;</div>
+                </div>
+            </div>
+            <div id="f-asof" class="f-asof">&nbsp;</div>
+        </div>
+        <div id="f-stats" class="f-stats panel"></div>
+    </section>
+
+    <!-- 3. Chart + 4. Quote panel -->
+    <section id="mid" class="fade">
+        <div id="chart-panel" class="panel">
+            <div id="ranges" class="pills"></div>
+            <div id="status" class="status"></div>
+            <canvas id="chart" width="1252" height="404"></canvas>
+        </div>
+        <div id="quote-panel" class="panel">
+            <div class="tabs">
+                <span class="tab on" data-tab="Quote">Quote</span><span class="tab" data-tab="Company">Company</span><span class="tab" data-tab="News">News</span><span class="tab" data-tab="Financials">Financials</span><span class="tab" data-tab="Analysis">Analysis</span>
+            </div>
+            <div id="q-grid" class="q-grid"></div>
+        </div>
+    </section>
+
+    <!-- 5. Bottom row -->
+    <section id="bottom" class="fade">
+        <div id="news-panel" class="panel">
+            <h3>Top News</h3>
+            <div class="news">
+                <div id="n-img" class="n-img"></div>
+                <div class="n-body">
+                    <div id="n-head" class="n-head">&nbsp;</div>
+                    <div id="n-sum" class="n-sum">&nbsp;</div>
+                    <div id="n-meta" class="n-meta">&nbsp;</div>
+                </div>
+            </div>
+        </div>
+        <div id="recs-panel" class="panel">
+            <h3>Analyst Ratings</h3>
+            <div id="recs"></div>
+        </div>
+        <div id="peers-panel" class="panel">
+            <h3>Key Competitors</h3>
+            <div id="peers"></div>
+        </div>
+    </section>
+
+    <!-- 6. Breaking news -->
+    <div id="breaking">
+        <span class="b-tag">BREAKING NEWS</span>
+        <span id="b-head" class="b-head">&nbsp;</span>
+        <span id="b-meta" class="b-meta"></span>
+    </div>
+
+    <!-- 7. Ticker tape -->
+    <footer id="tape"><div id="tape-track"></div></footer>
+
+    <!-- News pop-up (tap anywhere or press Back to close) -->
+    <div id="modal" class="modal">
+        <div class="m-card">
+            <div id="m-img" class="m-img"></div>
+            <div id="m-head" class="m-head"></div>
+            <div id="m-meta" class="m-meta"></div>
+            <div id="m-sum" class="m-sum"></div>
+            <div class="m-hint">Tap anywhere to close</div>
+        </div>
+    </div>
+</div>
+
+<script src="$WEBAPIS/webapis/webapis.js"></script>
+<script src="js/config.example.js"></script>
+<script src="js/config.js"></script>
+<script src="js/util.js"></script>
+<script src="js/api.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/feed.js"></script>
+<script src="js/chart.js"></script>
+<script src="js/views.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
