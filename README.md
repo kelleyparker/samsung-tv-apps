@@ -8,6 +8,7 @@ Personal Tizen web apps for Samsung TVs (developed on a Samsung Movingstyle), bu
 | `snes/` | **SNES** (`SnesApp001.SnesApp`) | SNES and NES emulator using [EmulatorJS](https://github.com/EmulatorJS/EmulatorJS) 4.2.3, a custom-built **Snes9x 2005** core and the stock **FCEUmm** NES core. Runs at about 59.9 fps at 1920x1080 (results below). Xbox Wireless Controller supported. Put your own ROMs in `snes/roms/` (see its README). |
 | `spike/` | **Spike** (`SpikeApp01.Spike`) | Capability test for WebAssembly, SharedArrayBuffer, WebGL2, Gamepad API and LAN access. |
 | `stocks/` | **Stocks** (`StocksApp1.Stocks`) | Live stock dashboard: index bar, featured stock with chart and stats, news, analyst ratings, competitors, breaking news and a ticker tape. Needs free Finnhub and Twelve Data keys (see below). |
+| `framex/` | **frameXTV** (`FrameXApp1.FrameX`) | Touch launcher that opens [framextv.xyz](https://www.framextv.xyz/) full screen. The ☰ handle (top left) has Home, Reload, Full app and Exit. If the site blanks itself inside the frame, the app hands the whole screen to the site, and the menu goes away. |
 | `snes-server/` | `serve.py` | Small CORS file server for the PC (port 8000). Used for debug beacons, and later for streaming ROMs. |
 | `tools/` | `build-core.sh` | Builds a libretro core into an EmulatorJS `*-wasm.data` file (see below). |
 

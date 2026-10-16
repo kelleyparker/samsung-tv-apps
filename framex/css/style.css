@@ -1,0 +1,51 @@
+html, body {
+    margin: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    background: #000;
+    font-family: "SamsungOne", "Samsung Sans", sans-serif;
+}
+
+#site {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1920px;
+    height: 1080px;
+    border: 0;
+}
+
+#menu {
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    z-index: 10;
+    display: flex;
+    gap: 12px;
+}
+
+#menu button {
+    height: 64px;
+    min-width: 64px;
+    padding: 0 24px;
+    border: 0;
+    border-radius: 32px;
+    background: rgba(24, 24, 27, 0.85);
+    color: #fafafa;
+    font-size: 28px;
+}
+
+#handle {
+    padding: 0 !important;
+    opacity: 0.35;
+    transition: opacity 0.3s;
+}
+
+#items {
+    display: none;
+    gap: 12px;
+}
+
+#menu.open #handle { opacity: 1; }
+#menu.open #items { display: flex; }

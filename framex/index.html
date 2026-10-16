@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1920, initial-scale=1.0">
+    <title>frameXTV</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<iframe id="site" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
+
+<!-- Touch menu: the site gets every tap except this small handle -->
+<div id="menu">
+    <button id="handle" aria-label="Menu">&#9776;</button>
+    <div id="items">
+        <button data-act="home">Home</button>
+        <button data-act="reload">Reload</button>
+        <button data-act="direct">Full app</button>
+        <button data-act="exit">Exit</button>
+    </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>
