@@ -1,4 +1,4 @@
-/* frameXTV launcher: shows the site full screen with a small touch menu. */
+/* frameXTV launcher: shows the site full screen with a small menu (touch or remote). */
 (function () {
     'use strict';
 
@@ -6,12 +6,21 @@
     var MENU_MS = 4000;     // menu closes itself after this long
     var BOUNCE_MS = 10000;  // a second page load this soon after the first = the site blanked itself
     var LOAD_MS = 20000;    // no page load at all by now = blocked
+    var HINT_MS = 6000;     // how long the "OK: menu" hint shows on remote-only TVs
+
+    var KEY_LEFT = 37, KEY_UP = 38, KEY_RIGHT = 39, KEY_DOWN = 40, KEY_ENTER = 13, KEY_BACK = 10009;
 
     var frame = document.getElementById('site');
     var menu = document.getElementById('menu');
     var loads = 0;
     var firstLoad = 0;
     var menuTimer = 0;
+    var buttons = Array.prototype.slice.call(document.querySelectorAll('#items button'));
+    var focused = -1;       // index into buttons while the menu is driven by the remote
+
+    // Remote-only TVs (no touchscreen) can't tap into the site, so keep key
+    // focus here. Otherwise the iframe swallows every remote key.
+    var remoteOnly = !(navigator.maxTouchPoints > 0);
 
     function exitApp() {
         try {
@@ -32,8 +41,14 @@
         frame.src = SITE;
     }
 
+    function setFocus(i) {
+        focused = i;
+        buttons.forEach(function (b, n) { b.className = n === i ? 'focus' : ''; });
+    }
+
     function closeMenu() {
         menu.className = '';
+        setFocus(-1);
     }
 
     function openMenu() {
@@ -71,11 +86,40 @@
         else if (act === 'exit') { exitApp(); }
     });
 
+    // Remote: OK / Up / Down opens the menu, Left / Right pick an item, OK runs
+    // it, Back closes the menu or exits.
     document.addEventListener('keydown', function (e) {
-        if (e.keyCode === 10009) {         // Back: close the menu, else exit
+        var k = e.keyCode;
+        if (k === KEY_BACK) {
             if (menu.className) { closeMenu(); } else { exitApp(); }
+            return;
         }
+        if (!menu.className) {
+            if (k === KEY_ENTER || k === KEY_UP || k === KEY_DOWN) {
+                openMenu();
+                setFocus(0);
+                e.preventDefault();
+            }
+            return;
+        }
+        if (focused < 0) { setFocus(0); }
+        if (k === KEY_LEFT) { setFocus(Math.max(0, focused - 1)); }
+        else if (k === KEY_RIGHT) { setFocus(Math.min(buttons.length - 1, focused + 1)); }
+        else if (k === KEY_ENTER) { e.preventDefault(); buttons[focused].click(); return; }
+        else { return; }
+        e.preventDefault();
+        openMenu();                        // restart the auto-close timer
     });
+
+    if (remoteOnly) {
+        frame.tabIndex = -1;
+        window.addEventListener('blur', function () {
+            setTimeout(function () { window.focus(); }, 0);
+        });
+        var hint = document.getElementById('hint');
+        hint.className = 'show';
+        setTimeout(function () { hint.className = ''; }, HINT_MS);
+    }
 
     home();
 }());

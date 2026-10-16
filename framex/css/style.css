@@ -49,3 +49,25 @@ html, body {
 
 #menu.open #handle { opacity: 1; }
 #menu.open #items { display: flex; }
+
+#menu button.focus {
+    background: #fafafa;
+    color: #09090b;
+}
+
+#hint {
+    position: absolute;
+    right: 32px;
+    bottom: 32px;
+    z-index: 10;
+    padding: 16px 28px;
+    border-radius: 32px;
+    background: rgba(24, 24, 27, 0.85);
+    color: #fafafa;
+    font-size: 28px;
+    opacity: 0;
+    transition: opacity 0.5s;
+    pointer-events: none;
+}
+
+#hint.show { opacity: 1; }
