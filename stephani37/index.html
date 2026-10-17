@@ -70,31 +70,40 @@
           <div id="timeline-list" class="timeline-list"></div>
         </div>
       </div>
-      <div class="hint">&#9664; &#9654; &#9650; &#9660; choose &nbsp;&middot;&nbsp; OK open &nbsp;&middot;&nbsp; BACK replay entrance &nbsp;&middot;&nbsp; PLAY/PAUSE mute music</div>
+      <div class="hint">&#9664; &#9654; &#9650; &#9660; or TAP to choose &nbsp;&middot;&nbsp; OK open &nbsp;&middot;&nbsp; BACK replay entrance &nbsp;&middot;&nbsp; PLAY/PAUSE mute music</div>
     </section>
 
     <!-- ===== PHOTO GALLERY SCREEN ===== -->
     <section id="screen-gallery" class="screen">
       <div class="gallery-header">
-        <div class="gallery-title">STEPHANI PHOTO GALLERY</div>
-        <div id="gallery-counter" class="gallery-counter">1 / 12</div>
+        <div class="header-left-group">
+          <div class="touch-back-btn" data-action="back">&#8592; MENU</div>
+          <div class="gallery-title">STEPHANI PHOTO GALLERY</div>
+        </div>
+        <div id="gallery-counter" class="gallery-counter">1 / 16</div>
       </div>
       <div id="gallery-grid" class="gallery-grid"></div>
-      <div class="hint">&#9664; &#9650; &#9654; &#9660; browse &nbsp;&middot;&nbsp; OK zoom in &nbsp;&middot;&nbsp; BACK return to menu</div>
+      <div class="hint">&#9664; &#9650; &#9654; &#9660; or TAP photo to zoom &nbsp;&middot;&nbsp; BACK return to menu</div>
     </section>
 
     <!-- ===== FULLSCREEN PHOTO LIGHTBOX ===== -->
     <div id="photo-lightbox" class="photo-lightbox hidden">
+      <div class="lightbox-nav lightbox-prev" data-action="lightbox-prev">&#10094;</div>
+      <div class="lightbox-nav lightbox-next" data-action="lightbox-next">&#10095;</div>
+      <div class="lightbox-close-btn" data-action="lightbox-close">&#10005; CLOSE</div>
       <div id="lightbox-img" class="lightbox-img"></div>
-      <div id="lightbox-caption" class="lightbox-caption">Photo 1 of 12</div>
-      <div class="hint">&#9664; &#9654; next photo &nbsp;&middot;&nbsp; OK or BACK exit zoom</div>
+      <div id="lightbox-caption" class="lightbox-caption">Photo 1 of 16</div>
+      <div class="hint">&#9664; &#9654; or SWIPE next photo &nbsp;&middot;&nbsp; TAP or BACK exit zoom</div>
     </div>
 
     <!-- ===== STEPHANI TRIVIA QUIZ SCREEN ===== -->
     <section id="screen-quiz" class="screen">
       <div class="quiz-container">
         <div class="quiz-header">
-          <div class="quiz-title">STEPHANI TRIVIA QUIZ</div>
+          <div class="header-left-group">
+            <div class="touch-back-btn" data-action="back">&#8592; MENU</div>
+            <div class="quiz-title">STEPHANI TRIVIA QUIZ</div>
+          </div>
           <div id="quiz-progress" class="quiz-progress">QUESTION 1 / 5</div>
         </div>
 
@@ -105,7 +114,7 @@
 
         <div id="quiz-feedback-box" class="quiz-feedback-box hidden">
           <div id="quiz-feedback-msg" class="quiz-feedback-msg"></div>
-          <div id="quiz-feedback-sub" class="quiz-feedback-sub">Press OK to continue</div>
+          <div id="quiz-feedback-sub" class="quiz-feedback-sub">Press OK or TAP here to continue</div>
         </div>
 
         <div id="quiz-results-box" class="quiz-results-box hidden">
@@ -118,13 +127,16 @@
           </div>
         </div>
       </div>
-      <div id="quiz-hint" class="hint">&#9650; &#9660; select answer &nbsp;&middot;&nbsp; OK confirm &nbsp;&middot;&nbsp; BACK return to menu</div>
+      <div id="quiz-hint" class="hint">&#9650; &#9660; or TAP answer &nbsp;&middot;&nbsp; OK confirm &nbsp;&middot;&nbsp; BACK return to menu</div>
     </section>
 
     <!-- ===== DRINK RECIPES SCREEN ===== -->
     <section id="screen-drinks" class="screen">
       <div class="drinks-header">
-        <div class="drinks-title">&#127822; PINK LADY CIDER COCKTAILS</div>
+        <div class="header-left-group">
+          <div class="touch-back-btn" data-action="back">&#8592; MENU</div>
+          <div class="drinks-title">&#127822; PINK LADY CIDER COCKTAILS</div>
+        </div>
         <div id="drinks-counter" class="drinks-counter">1 / 36</div>
       </div>
       <div id="drinks-cats" class="drinks-cats"></div>
@@ -132,7 +144,7 @@
         <div id="drinks-list" class="drinks-list"></div>
         <div id="drinks-detail" class="drinks-detail"></div>
       </div>
-      <div class="hint">&#9650; &#9660; browse drinks &nbsp;&middot;&nbsp; &#9664; &#9654; switch spirit category &nbsp;&middot;&nbsp; BACK return to menu</div>
+      <div class="hint">&#9650; &#9660; or TAP drink &nbsp;&middot;&nbsp; &#9664; &#9654; or TAP category &nbsp;&middot;&nbsp; BACK return to menu</div>
     </section>
 
     <!-- ===== MODULE (placeholder until each module is built) ===== -->

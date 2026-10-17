@@ -688,6 +688,155 @@
     }
   });
 
+  /* ---------- touch & pointer input (Samsung Movingstyle + touch displays) ---------- */
+  function closest(node, sel) {
+    while (node && node !== document && node.nodeType === 1) {
+      var fn = node.matches || node.webkitMatchesSelector || node.msMatchesSelector;
+      if (fn && fn.call(node, sel)) return node;
+      node = node.parentNode;
+    }
+    return null;
+  }
+
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (state.gate) { closeGateAndStart(); return; }
+
+    // Tap Wi-Fi badge anywhere to toggle music mute
+    if (closest(t, '#global-wifi')) {
+      toggleMute();
+      return;
+    }
+
+    // Lightbox open: handle prev, next, close, or backdrop tap
+    if (isLightboxOpen) {
+      if (closest(t, '[data-action="lightbox-prev"]')) { nextLightbox(-1); return; }
+      if (closest(t, '[data-action="lightbox-next"]')) { nextLightbox(1); return; }
+      if (closest(t, '[data-action="lightbox-close"]')) { closeLightbox(); return; }
+      // Tapping photo or backdrop closes lightbox
+      closeLightbox();
+      return;
+    }
+
+    // Back / Menu button on any sub-screen
+    if (closest(t, '[data-action="back"]')) {
+      goHome();
+      return;
+    }
+
+    if (state.screen === 'intro') {
+      goHome();
+      return;
+    }
+
+    if (state.screen === 'home') {
+      var tile = closest(t, '.tile');
+      if (tile) {
+        openModule(+tile.getAttribute('data-i'));
+        return;
+      }
+      if (closest(t, '.home-photo-card')) {
+        openGallery();
+        return;
+      }
+      if (closest(t, '#home-title')) {
+        playIntro();
+        return;
+      }
+      return;
+    }
+
+    if (state.screen === 'gallery') {
+      var gItem = closest(t, '.gallery-item');
+      if (gItem) {
+        var gIdx = +gItem.getAttribute('data-idx');
+        setGalleryFocus(gIdx);
+        openLightbox(gIdx);
+        return;
+      }
+      return;
+    }
+
+    if (state.screen === 'quiz') {
+      if (quizState.showingResults) {
+        if (closest(t, '#quiz-retry-btn')) {
+          setQuizResultBtnFocus(0);
+          executeQuizResultBtn();
+          return;
+        }
+        if (closest(t, '#quiz-exit-btn')) {
+          setQuizResultBtnFocus(1);
+          executeQuizResultBtn();
+          return;
+        }
+        return;
+      }
+      if (quizState.answered) {
+        if (closest(t, '#quiz-feedback-box') || closest(t, '.quiz-option') || closest(t, '.quiz-question-box')) {
+          submitQuizAnswer();
+        }
+        return;
+      }
+      var qOpt = closest(t, '.quiz-option');
+      if (qOpt) {
+        var qIdx = +qOpt.getAttribute('data-idx');
+        setQuizOptionFocus(qIdx);
+        submitQuizAnswer();
+        return;
+      }
+      return;
+    }
+
+    if (state.screen === 'drinks') {
+      var catPill = closest(t, '.drink-cat-pill');
+      if (catPill) {
+        var catIdx = +catPill.getAttribute('data-cat');
+        if (drinkCategories[catIdx]) {
+          setDrinkFocus(drinkCategories[catIdx].startIndex);
+        }
+        return;
+      }
+      var dItem = closest(t, '.drink-item');
+      if (dItem) {
+        setDrinkFocus(+dItem.getAttribute('data-idx'));
+        return;
+      }
+      if (closest(t, '#drinks-detail')) {
+        FX.burst(1300, 540, 35);
+        return;
+      }
+      return;
+    }
+
+    if (state.screen === 'module') {
+      goHome();
+    }
+  });
+
+  // Horizontal touch swipe gestures for Lightbox photos & Drink recipe detail card
+  var touchStartX = 0, touchStartY = 0, touchTarget = null;
+  document.addEventListener('touchstart', function (e) {
+    if (!e.touches || !e.touches[0]) return;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    touchTarget = e.target;
+  }, false);
+
+  document.addEventListener('touchend', function (e) {
+    if (!e.changedTouches || !e.changedTouches[0]) return;
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    var dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+
+    if (isLightboxOpen) {
+      if (dx < 0) nextLightbox(1);
+      else nextLightbox(-1);
+    } else if (state.screen === 'drinks' && closest(touchTarget, '#drinks-detail')) {
+      if (dx < 0) setDrinkFocus(drinkFocus + 1);
+      else setDrinkFocus(drinkFocus - 1);
+    }
+  }, false);
+
   /* ---------- ambient photo slideshow ---------- */
   var Slideshow = (function () {
     var photos = P.photos || [];
@@ -717,6 +866,8 @@
       var nextImg = getPhotoSrc(cur);
       var curDate = getPhotoDate(cur);
       var panCls = pans[Math.floor(Math.random() * pans.length)];
+      var incoming = activeSlot === 0 ? slideA : slideB;
+      var outgoing = activeSlot === 0 ? slideB : slideA;
 
       function doSwap() {
         incoming.className = 'slide ' + panCls;
