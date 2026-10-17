@@ -9,7 +9,7 @@ Personal Tizen web apps for Samsung TVs (developed on a Samsung Movingstyle), bu
 | `spike/` | **Spike** (`SpikeApp01.Spike`) | Capability test for WebAssembly, SharedArrayBuffer, WebGL2, Gamepad API and LAN access. |
 | `stocks/` | **Stocks** (`StocksApp1.Stocks`) | Live stock dashboard: index bar, featured stock with chart and stats, news, analyst ratings, competitors, breaking news and a ticker tape. Needs free Finnhub and Twelve Data keys (see below). |
 | `framex/` | **frameXTV** (`FrameXApp1.FrameX`) | Touch launcher that opens [framextv.xyz](https://www.framextv.xyz/) full screen. The ☰ handle (top left) has Home, Reload, Full app and Exit. If the site blanks itself inside the frame, the app hands the whole screen to the site, and the menu goes away. |
-| `stephani37/` | **Baby Girl's 37th** (`Stph37Bday.BabyGirl37`) | Interactive 1080p birthday party hub for Stephani's 37th: synthwave entrance sequence, ambient photo slideshow, party schedule timeline, guest Wi-Fi badge, HD photo gallery with lightbox zoom, and interactive trivia quiz. |
+| `stephani37/` | **Baby Girl's 37th** (`Stph37Bday.BabyGirl37`) | Interactive 1080p birthday party hub for Stephani's 37th: synthwave entrance sequence, ambient photo slideshow, party schedule timeline, guest Wi-Fi badge, HD photo gallery with lightbox zoom, interactive trivia quiz, and 36 Pink Lady cocktail recipes with full Movingstyle touchscreen support. |
 | `snes-server/` | `serve.py` | Small CORS file server for the PC (port 8000). Used for debug beacons, and later for streaming ROMs. |
 | `tools/` | `build-core.sh` | Builds a libretro core into an EmulatorJS `*-wasm.data` file (see below). |
 
@@ -124,6 +124,36 @@ Any touch or remote key pauses the auto-rotation for 2 minutes, and a "Paused" c
 - All TVs share the keys:
   - Twelve Data allows 800 calls/day and 8/min. That's roughly 150 calls per TV per day, so about 4-5 TVs fit.
   - Finnhub allows 60 calls/min. Profiles, stats, ratings and peers are cached for the day.
+
+## Baby Girl's 37th (stephani37)
+
+Interactive party centerpiece built for Stephani's 37th birthday party. Designed for both traditional TV remote control and direct touchscreen interaction on the Samsung Movingstyle.
+
+### Features
+- **Grand Entrance Sequence:** Synthwave typography, screen shakes, color flashes, particle FX cannons, and theme music autoplay.
+- **Ambient Photo Slideshow:** Dual-buffer crossfading background slideshow with subtle Ken Burns pan effects and pre-decoded memory caching.
+- **Party Hub:** Real-time party clock, schedule timeline, and persistent guest Wi-Fi badge (tap or press Play/Pause to toggle music mute).
+- **HD Photo Gallery:** Grid view with year badges, instant thumbnail loading, and a full-screen photo lightbox with high-res zoom.
+- **Trivia Quiz:** 5 multiple-choice questions celebrating Stephani, with instant answer feedback, sound effects, particle bursts, and final score ranking.
+- **Drink Recipes:** 36 Pink Lady Apple Cider Cocktail recipes categorized across 7 spirit types (Vodka, Gin, Bourbon & Rye, Rum, Tequila & Mezcal, Brandy & Cognac, and Sparkling/Champagne), complete with ingredient checklists, mix instructions, and flavor adjustment tips.
+
+### Touch & Remote Controls
+
+| Input | Remote | Touchscreen (Movingstyle) |
+|---|---|---|
+| Menu navigation | Up / Down / Left / Right, Enter | Tap any tile or photo card |
+| Replay intro | Press `0` or Back on Home | Tap the header title |
+| Music mute | Play/Pause or `M` | Tap the Wi-Fi badge |
+| Gallery lightbox | Left / Right to browse, Enter to view, Back to close | Tap photo to open, tap arrows or swipe left/right, tap close button |
+| Trivia quiz | D-pad to select, Enter to confirm | Tap options directly; tap results button to retry or exit |
+| Drink recipes | Up / Down to select drink, Left / Right to jump spirit category | Tap category pills or drink items; swipe detail card left/right |
+| Sub-screen back | Back key | Tap on-screen `← MENU` button |
+
+### TV Performance & Display
+- Native 1080p rendering mode (`screen.size.normal`) ensures razor-sharp text and fast rendering across both 4K/8K TVs and the 27" Movingstyle.
+- GPU acceleration via `translateZ(0)` on all active animated elements and scroll containers.
+- Pre-cached 480px thumbnails (`assets/photos/thumbs/`) for stutter-free gallery scrolling.
+- Movingstyle touchscreen support enabled via Samsung Tizen metadata (`touch.device.support=enable` and `floating.navigation=false`).
 
 ## Build and install (Tizen CLI)
 
