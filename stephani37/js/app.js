@@ -312,6 +312,8 @@
       openGallery();
     } else if (mod.id === 'quiz') {
       openQuiz();
+    } else if (mod.id === 'drinks') {
+      openDrinks();
     } else {
       $('m-title').textContent = mod.title;
       show('module');
@@ -477,6 +479,139 @@
     }
   }
 
+  /* ---------- Drink Recipes Module (36 Pink Lady Apple Cider Cocktails) ---------- */
+  var drinkFocus = 0;
+  var drinkCategories = [];
+
+  function buildDrinks() {
+    var drinks = P.drinks || [];
+    if (!drinks.length) return;
+
+    // Extract unique categories in order + first index of each
+    drinkCategories = [];
+    var seen = {};
+    drinks.forEach(function (d, idx) {
+      if (!seen[d.category]) {
+        seen[d.category] = true;
+        drinkCategories.push({ name: d.category, startIndex: idx });
+      }
+    });
+
+    // Render category pills
+    var catHtml = '';
+    drinkCategories.forEach(function (c, ci) {
+      catHtml += '<div class="drink-cat-pill" data-cat="' + ci + '">' + c.name + '</div>';
+    });
+    $('drinks-cats').innerHTML = catHtml;
+
+    // Render 36 drink list items
+    var listHtml = '';
+    drinks.forEach(function (d, idx) {
+      listHtml += '<div class="drink-item" data-idx="' + idx + '">' +
+                    '<div class="drink-item-num">' + (idx + 1) + '</div>' +
+                    '<div class="drink-item-info">' +
+                      '<div class="drink-item-title">' + d.title + '</div>' +
+                      '<div class="drink-item-sub">' + d.spirit + '</div>' +
+                    '</div>' +
+                  '</div>';
+    });
+    $('drinks-list').innerHTML = listHtml;
+  }
+
+  function renderDrinkDetail(d, idx, total) {
+    $('drinks-counter').textContent = (idx + 1) + ' / ' + total;
+
+    var ingrHtml = '';
+    (d.ingredients || []).forEach(function (ing) {
+      ingrHtml += '<li>' + ing + '</li>';
+    });
+
+    var methodHtml = '';
+    (d.method || []).forEach(function (step, sIdx) {
+      methodHtml += '<li><span class="drink-step-num">' + (sIdx + 1) + '</span><span>' + step + '</span></li>';
+    });
+
+    var badgesHtml = '';
+    if (d.spirit) badgesHtml += '<div class="drink-badge"><strong>Spirit:</strong> ' + d.spirit + '</div>';
+    if (d.style)  badgesHtml += '<div class="drink-badge"><strong>Style:</strong> ' + d.style + '</div>';
+    if (d.time)   badgesHtml += '<div class="drink-badge"><strong>Time:</strong> ' + d.time + '</div>';
+
+    var adjustHtml = '';
+    if (d.adjust) {
+      adjustHtml = '<div class="drink-adjust-box"><strong>Tip / Adjust:</strong> ' + d.adjust + '</div>';
+    }
+
+    $('drinks-detail').innerHTML =
+      '<div>' +
+        '<div class="drink-detail-top">' +
+          '<div class="drink-detail-cat">' + d.category + '</div>' +
+          '<div class="drink-detail-name">' + d.title + '</div>' +
+          '<div class="drink-detail-badges">' + badgesHtml + '</div>' +
+        '</div>' +
+        '<div class="drink-detail-cols">' +
+          '<div>' +
+            '<div class="drink-col-title">INGREDIENTS</div>' +
+            '<ul class="drink-ingr-list">' + ingrHtml + '</ul>' +
+          '</div>' +
+          '<div>' +
+            '<div class="drink-col-title">HOW TO MIX</div>' +
+            '<ol class="drink-method-list">' + methodHtml + '</ol>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      adjustHtml;
+  }
+
+  function setDrinkFocus(i) {
+    var drinks = P.drinks || [];
+    if (!drinks.length) return;
+    drinkFocus = (i + drinks.length) % drinks.length;
+
+    var items = document.querySelectorAll('.drink-item');
+    for (var j = 0; j < items.length; j++) {
+      items[j].classList.toggle('focused', j === drinkFocus);
+    }
+
+    var target = items[drinkFocus];
+    if (target && target.scrollIntoView) {
+      target.scrollIntoView({ block: 'nearest', behavior: 'auto' });
+    }
+
+    var cur = drinks[drinkFocus];
+    renderDrinkDetail(cur, drinkFocus, drinks.length);
+
+    // Highlight active category pill
+    var pills = document.querySelectorAll('.drink-cat-pill');
+    for (var k = 0; k < drinkCategories.length; k++) {
+      if (pills[k]) {
+        pills[k].classList.toggle('active', drinkCategories[k].name === cur.category);
+      }
+    }
+  }
+
+  function jumpDrinkCategory(step) {
+    var drinks = P.drinks || [];
+    if (!drinks.length || !drinkCategories.length) return;
+    var curCat = drinks[drinkFocus].category;
+    var catIdx = 0;
+    for (var i = 0; i < drinkCategories.length; i++) {
+      if (drinkCategories[i].name === curCat) {
+        catIdx = i;
+        break;
+      }
+    }
+    var nextCatIdx = (catIdx + step + drinkCategories.length) % drinkCategories.length;
+    setDrinkFocus(drinkCategories[nextCatIdx].startIndex);
+  }
+
+  function openDrinks() {
+    buildDrinks();
+    show('drinks');
+    setDrinkFocus(0);
+    var listEl = $('drinks-list');
+    if (listEl) listEl.scrollTop = 0;
+  }
+
   function startClock() {
     function tickClock() { $('clock').textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }
     tickClock(); setInterval(tickClock, 1000);
@@ -534,6 +669,13 @@
           goHome();
         }
       }
+    } else if (state.screen === 'drinks') {
+      if (k === K.UP) setDrinkFocus(drinkFocus - 1);
+      else if (k === K.DOWN) setDrinkFocus(drinkFocus + 1);
+      else if (k === K.LEFT) jumpDrinkCategory(-1);
+      else if (k === K.RIGHT) jumpDrinkCategory(1);
+      else if (k === K.ENTER) FX.burst(1300, 540, 35);
+      else if (isBack(k)) goHome();
     } else if (state.screen === 'gallery') {
       if (k === K.LEFT) setGalleryFocus(galleryFocus - 1);
       else if (k === K.RIGHT) setGalleryFocus(galleryFocus + 1);
