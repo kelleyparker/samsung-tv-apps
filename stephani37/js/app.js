@@ -161,6 +161,85 @@
     badge(audio.muted ? 'Music muted' : 'Music on');
   }
 
+  /* ---------- sound FX (ultra-low-latency Web Audio API) ---------- */
+  var SoundFX = (function () {
+    var ctx = null;
+    var tapBuffer = null;
+    var gainNode = null;
+
+    function getCtx() {
+      if (!ctx) {
+        var AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) {
+          ctx = new AudioCtx();
+          gainNode = ctx.createGain();
+          gainNode.gain.value = 0.5; // balanced touch volume
+          gainNode.connect(ctx.destination);
+        }
+      }
+      if (ctx && ctx.state === 'suspended') {
+        try { ctx.resume(); } catch (e) { }
+      }
+      return ctx;
+    }
+
+    function init() {
+      try {
+        var ac = getCtx();
+        if (!ac) return;
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'assets/audio/tap.mp3', true);
+        xhr.responseType = 'arraybuffer';
+        xhr.onload = function () {
+          if (xhr.status === 200 || xhr.status === 0) {
+            ac.decodeAudioData(xhr.response, function (buf) {
+              tapBuffer = buf;
+            }, function () { });
+          }
+        };
+        xhr.send();
+      } catch (e) { }
+    }
+
+    function playSynthClick(ac) {
+      try {
+        var osc = ac.createOscillator();
+        var g = ac.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(620, ac.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(140, ac.currentTime + 0.045);
+        g.gain.setValueAtTime(0.35, ac.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.045);
+        osc.connect(g);
+        g.connect(ac.destination);
+        osc.start();
+        osc.stop(ac.currentTime + 0.046);
+      } catch (e) { }
+    }
+
+    function playTap() {
+      var ac = getCtx();
+      if (!ac) return;
+      if (tapBuffer) {
+        try {
+          var src = ac.createBufferSource();
+          src.buffer = tapBuffer;
+          src.connect(gainNode);
+          src.start(0);
+        } catch (e) {
+          playSynthClick(ac);
+        }
+      } else {
+        playSynthClick(ac);
+      }
+    }
+
+    return {
+      init: init,
+      tap: playTap
+    };
+  })();
+
   /* ---------- intro / entrance ---------- */
   function playIntro() {
     clearTimers();
@@ -626,6 +705,8 @@
     if (k === K.PLAYPAUSE || k === K.PLAY || k === K.PAUSE || k === K.M) { e.preventDefault(); toggleMute(); return; }
     if (isBack(k)) e.preventDefault(); // never let BACK exit the app mid-party
 
+    triggerTapSound();
+
     if (isLightboxOpen) {
       if (k === K.LEFT || k === K.UP) nextLightbox(-1);
       else if (k === K.RIGHT || k === K.DOWN) nextLightbox(1);
@@ -698,18 +779,29 @@
     return null;
   }
 
+  var lastSoundTime = 0;
+  function triggerTapSound() {
+    var now = Date.now ? Date.now() : +new Date();
+    if (now - lastSoundTime > 60) {
+      lastSoundTime = now;
+      SoundFX.tap();
+    }
+  }
+
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (state.gate) { closeGateAndStart(); return; }
 
     // Tap Wi-Fi badge anywhere to toggle music mute
     if (closest(t, '#global-wifi')) {
+      triggerTapSound();
       toggleMute();
       return;
     }
 
     // Lightbox open: handle prev, next, close, or backdrop tap
     if (isLightboxOpen) {
+      triggerTapSound();
       if (closest(t, '[data-action="lightbox-prev"]')) { nextLightbox(-1); return; }
       if (closest(t, '[data-action="lightbox-next"]')) { nextLightbox(1); return; }
       if (closest(t, '[data-action="lightbox-close"]')) { closeLightbox(); return; }
@@ -720,11 +812,13 @@
 
     // Back / Menu button on any sub-screen
     if (closest(t, '[data-action="back"]')) {
+      triggerTapSound();
       goHome();
       return;
     }
 
     if (state.screen === 'intro') {
+      triggerTapSound();
       goHome();
       return;
     }
@@ -732,14 +826,17 @@
     if (state.screen === 'home') {
       var tile = closest(t, '.tile');
       if (tile) {
+        triggerTapSound();
         openModule(+tile.getAttribute('data-i'));
         return;
       }
       if (closest(t, '.home-photo-card')) {
+        triggerTapSound();
         openGallery();
         return;
       }
       if (closest(t, '#home-title')) {
+        triggerTapSound();
         playIntro();
         return;
       }
@@ -749,6 +846,7 @@
     if (state.screen === 'gallery') {
       var gItem = closest(t, '.gallery-item');
       if (gItem) {
+        triggerTapSound();
         var gIdx = +gItem.getAttribute('data-idx');
         setGalleryFocus(gIdx);
         openLightbox(gIdx);
@@ -760,11 +858,13 @@
     if (state.screen === 'quiz') {
       if (quizState.showingResults) {
         if (closest(t, '#quiz-retry-btn')) {
+          triggerTapSound();
           setQuizResultBtnFocus(0);
           executeQuizResultBtn();
           return;
         }
         if (closest(t, '#quiz-exit-btn')) {
+          triggerTapSound();
           setQuizResultBtnFocus(1);
           executeQuizResultBtn();
           return;
@@ -773,12 +873,14 @@
       }
       if (quizState.answered) {
         if (closest(t, '#quiz-feedback-box') || closest(t, '.quiz-option') || closest(t, '.quiz-question-box')) {
+          triggerTapSound();
           submitQuizAnswer();
         }
         return;
       }
       var qOpt = closest(t, '.quiz-option');
       if (qOpt) {
+        triggerTapSound();
         var qIdx = +qOpt.getAttribute('data-idx');
         setQuizOptionFocus(qIdx);
         submitQuizAnswer();
@@ -790,6 +892,7 @@
     if (state.screen === 'drinks') {
       var catPill = closest(t, '.drink-cat-pill');
       if (catPill) {
+        triggerTapSound();
         var catIdx = +catPill.getAttribute('data-cat');
         if (drinkCategories[catIdx]) {
           setDrinkFocus(drinkCategories[catIdx].startIndex);
@@ -798,10 +901,12 @@
       }
       var dItem = closest(t, '.drink-item');
       if (dItem) {
+        triggerTapSound();
         setDrinkFocus(+dItem.getAttribute('data-idx'));
         return;
       }
       if (closest(t, '#drinks-detail')) {
+        triggerTapSound();
         FX.burst(1300, 540, 35);
         return;
       }
@@ -809,6 +914,7 @@
     }
 
     if (state.screen === 'module') {
+      triggerTapSound();
       goHome();
     }
   });
@@ -820,6 +926,10 @@
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
     touchTarget = e.target;
+    // Play sound immediately on physical finger contact for zero latency
+    if (closest(e.target, '.tile, .home-photo-card, #home-title, .gallery-item, .quiz-option, .quiz-btn, .drink-cat-pill, .drink-item, .touch-back-btn, .lightbox-nav, .lightbox-close-btn, #global-wifi, #drinks-detail, #start-gate')) {
+      triggerTapSound();
+    }
   }, false);
 
   document.addEventListener('touchend', function (e) {
@@ -829,13 +939,16 @@
     if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
 
     if (isLightboxOpen) {
+      triggerTapSound();
       if (dx < 0) nextLightbox(1);
       else nextLightbox(-1);
     } else if (state.screen === 'drinks' && closest(touchTarget, '#drinks-detail')) {
+      triggerTapSound();
       if (dx < 0) setDrinkFocus(drinkFocus + 1);
       else setDrinkFocus(drinkFocus - 1);
     }
   }, false);
+
 
   /* ---------- ambient photo slideshow ---------- */
   var Slideshow = (function () {
@@ -955,6 +1068,7 @@
     startClock();
     FX.start();
     Slideshow.start();
+    SoundFX.init();
 
     audio.loop = true;
     audio.volume = P.music.introVolume;
