@@ -1,0 +1,4 @@
+Put your entrance theme here as:  theme.mp3
+
+(Path/filename can be changed in js/content.js -> music.src)
+Use music.startAt in content.js to skip straight to the drop.

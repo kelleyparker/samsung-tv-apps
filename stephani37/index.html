@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1920, height=1080, user-scalable=no">
+  <title>Baby Girl's 37th</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="stage">
+    <!-- Ambient photo slideshow layer -->
+    <div id="bg-slideshow" class="bg-slideshow">
+      <div id="slide-a" class="slide"></div>
+      <div id="slide-b" class="slide"></div>
+      <div class="slideshow-overlay"></div>
+    </div>
+
+    <!-- Permanent WiFi Info in top right corner across all menus -->
+    <div id="global-wifi" class="global-wifi-badge intro-wifi-badge">
+      <div class="wifi-icon">&#128246;</div>
+      <div class="wifi-details">
+        <div class="wifi-label">GUEST WI-FI</div>
+        <div class="wifi-row"><span class="wifi-k">SSID:</span> <span id="wifi-ssid" class="wifi-v">BabyPenguin</span></div>
+        <div class="wifi-row"><span class="wifi-k">PASS:</span> <span id="wifi-pass" class="wifi-v">sanjosewaco713</span></div>
+      </div>
+    </div>
+
+    <!-- ===== INTRO / ENTRANCE ===== -->
+    <section id="screen-intro" class="screen">
+
+      <div class="floor"><div class="floor-grid"></div></div>
+      <div class="beams">
+        <div class="beam b1"></div>
+        <div class="beam b2"></div>
+        <div class="beam b3"></div>
+        <div class="beam b4"></div>
+      </div>
+      <div class="intro-text">
+        <div id="t-welcome" class="line welcome"></div>
+        <div id="t-name" class="line name"></div>
+        <div class="num-wrap"><div id="t-num" class="line num"></div></div>
+        <div id="t-party" class="line party"></div>
+      </div>
+      <!-- Intro Timeline Overlay (fades in at 10s with 2000ms cross-dissolve) -->
+      <div id="intro-timeline" class="intro-timeline">
+        <div class="intro-timeline-box">
+          <div class="intro-timeline-title">&#127881; TONIGHT'S PARTY TIMELINE</div>
+          <div id="intro-timeline-list" class="intro-timeline-list"></div>
+        </div>
+      </div>
+      <div class="prompt">PRESS OK TO ENTER THE PARTY</div>
+    </section>
+
+    <!-- ===== HOME HUB ===== -->
+    <section id="screen-home" class="screen">
+      <div class="home-header">
+        <div id="home-title" class="home-title"></div>
+        <div id="clock" class="clock"></div>
+      </div>
+      <div class="home-main">
+        <div id="tiles" class="tiles"></div>
+        <div class="home-photo-card">
+          <div id="menu-photo" class="menu-photo"></div>
+          <div class="menu-photo-caption">BIRTHDAY GIRL &bull; 37 YEARS OF AMAZING</div>
+        </div>
+        <div class="home-timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-icon">&#127881;</span> PARTY TIMELINE
+          </div>
+          <div id="timeline-list" class="timeline-list"></div>
+        </div>
+      </div>
+      <div class="hint">&#9664; &#9654; &#9650; &#9660; choose &nbsp;&middot;&nbsp; OK open &nbsp;&middot;&nbsp; BACK replay entrance &nbsp;&middot;&nbsp; PLAY/PAUSE mute music</div>
+    </section>
+
+    <!-- ===== PHOTO GALLERY SCREEN ===== -->
+    <section id="screen-gallery" class="screen">
+      <div class="gallery-header">
+        <div class="gallery-title">STEPHANI PHOTO GALLERY</div>
+        <div id="gallery-counter" class="gallery-counter">1 / 12</div>
+      </div>
+      <div id="gallery-grid" class="gallery-grid"></div>
+      <div class="hint">&#9664; &#9650; &#9654; &#9660; browse &nbsp;&middot;&nbsp; OK zoom in &nbsp;&middot;&nbsp; BACK return to menu</div>
+    </section>
+
+    <!-- ===== FULLSCREEN PHOTO LIGHTBOX ===== -->
+    <div id="photo-lightbox" class="photo-lightbox hidden">
+      <div id="lightbox-img" class="lightbox-img"></div>
+      <div id="lightbox-caption" class="lightbox-caption">Photo 1 of 12</div>
+      <div class="hint">&#9664; &#9654; next photo &nbsp;&middot;&nbsp; OK or BACK exit zoom</div>
+    </div>
+
+    <!-- ===== STEPHANI TRIVIA QUIZ SCREEN ===== -->
+    <section id="screen-quiz" class="screen">
+      <div class="quiz-container">
+        <div class="quiz-header">
+          <div class="quiz-title">STEPHANI TRIVIA QUIZ</div>
+          <div id="quiz-progress" class="quiz-progress">QUESTION 1 / 5</div>
+        </div>
+
+        <div id="quiz-question-box" class="quiz-question-box">
+          <div id="quiz-question-text" class="quiz-question-text"></div>
+          <div id="quiz-options-grid" class="quiz-options-grid"></div>
+        </div>
+
+        <div id="quiz-feedback-box" class="quiz-feedback-box hidden">
+          <div id="quiz-feedback-msg" class="quiz-feedback-msg"></div>
+          <div id="quiz-feedback-sub" class="quiz-feedback-sub">Press OK to continue</div>
+        </div>
+
+        <div id="quiz-results-box" class="quiz-results-box hidden">
+          <div id="quiz-results-score" class="quiz-results-score">5 / 5</div>
+          <div id="quiz-results-title" class="quiz-results-title">PERFECT SCORE!</div>
+          <div id="quiz-results-desc" class="quiz-results-desc">You truly know Baby Girl inside and out!</div>
+          <div class="quiz-results-actions">
+            <div id="quiz-retry-btn" class="quiz-btn focused">PLAY AGAIN</div>
+            <div id="quiz-exit-btn" class="quiz-btn">RETURN TO MENU</div>
+          </div>
+        </div>
+      </div>
+      <div id="quiz-hint" class="hint">&#9650; &#9660; select answer &nbsp;&middot;&nbsp; OK confirm &nbsp;&middot;&nbsp; BACK return to menu</div>
+    </section>
+
+    <!-- ===== MODULE (placeholder until each module is built) ===== -->
+    <section id="screen-module" class="screen">
+      <div class="module-inner">
+        <div id="m-title" class="module-title"></div>
+        <div class="module-sub">Coming soon &mdash; building this next!</div>
+        <div class="hint">BACK to return</div>
+      </div>
+    </section>
+
+    <canvas id="fx" width="960" height="540"></canvas>
+    <div id="flash"></div>
+    <div id="badge"></div>
+    <div id="start-gate" class="hidden"><div>PRESS OK TO START THE PARTY</div></div>
+  </div>
+
+  <audio id="theme" preload="auto"></audio>
+
+  <script src="js/content.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

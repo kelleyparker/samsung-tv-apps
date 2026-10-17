@@ -9,6 +9,7 @@ Personal Tizen web apps for Samsung TVs (developed on a Samsung Movingstyle), bu
 | `spike/` | **Spike** (`SpikeApp01.Spike`) | Capability test for WebAssembly, SharedArrayBuffer, WebGL2, Gamepad API and LAN access. |
 | `stocks/` | **Stocks** (`StocksApp1.Stocks`) | Live stock dashboard: index bar, featured stock with chart and stats, news, analyst ratings, competitors, breaking news and a ticker tape. Needs free Finnhub and Twelve Data keys (see below). |
 | `framex/` | **frameXTV** (`FrameXApp1.FrameX`) | Touch launcher that opens [framextv.xyz](https://www.framextv.xyz/) full screen. The ☰ handle (top left) has Home, Reload, Full app and Exit. If the site blanks itself inside the frame, the app hands the whole screen to the site, and the menu goes away. |
+| `stephani37/` | **Baby Girl's 37th** (`Stph37Bday.BabyGirl37`) | Interactive 1080p birthday party hub for Stephani's 37th: synthwave entrance sequence, ambient photo slideshow, party schedule timeline, guest Wi-Fi badge, HD photo gallery with lightbox zoom, and interactive trivia quiz. |
 | `snes-server/` | `serve.py` | Small CORS file server for the PC (port 8000). Used for debug beacons, and later for streaming ROMs. |
 | `tools/` | `build-core.sh` | Builds a libretro core into an EmulatorJS `*-wasm.data` file (see below). |
 
