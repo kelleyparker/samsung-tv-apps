@@ -14,7 +14,8 @@
   var K = {
     LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, ENTER: 13,
     BACK: 10009, ESC: 27, BACKSPACE: 8,
-    PLAYPAUSE: 10252, PLAY: 415, PAUSE: 19, M: 77
+    PLAYPAUSE: 10252, PLAY: 415, PAUSE: 19, M: 77,
+    NEXT: 10233, PREV: 10232, FF: 417, N: 78, P: 80
   };
 
   /* ---------- layout: scale the 1920x1080 stage to any window ---------- */
@@ -26,7 +27,8 @@
   /* ---------- Tizen remote keys ---------- */
   function registerKeys() {
     if (!(window.tizen && tizen.tvinputdevice)) return;
-    ['MediaPlayPause', 'MediaPlay', 'MediaPause', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    ['MediaPlayPause', 'MediaPlay', 'MediaPause', 'MediaTrackNext', 'MediaTrackPrevious', 'MediaFastForward',
+      '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
       'ColorF0Red', 'ColorF1Green', 'ColorF2Yellow', 'ColorF3Blue'].forEach(function (k) {
       try { tizen.tvinputdevice.registerKey(k); } catch (e) { /* key not on this remote */ }
     });
@@ -134,8 +136,45 @@
     }, 50);
   }
 
+  /* ---------- music & playlist ---------- */
+  var currentTrackIdx = 0;
+  function getPlaylist() {
+    if (P.music && P.music.playlist && P.music.playlist.length) {
+      return P.music.playlist;
+    }
+    return [{ title: 'Party Theme', src: P.music.src }];
+  }
+
+  function updateMusicBadge() {
+    var pl = getPlaylist();
+    var track = pl[currentTrackIdx];
+    var titleEl = $('music-track-title');
+    if (titleEl && track) {
+      titleEl.textContent = track.title;
+    }
+  }
+
+  function playTrack(idx) {
+    var pl = getPlaylist();
+    currentTrackIdx = (idx + pl.length) % pl.length;
+    var track = pl[currentTrackIdx];
+    audio.src = track.src;
+    audio.currentTime = (currentTrackIdx === 0 && P.music.startAt) ? P.music.startAt : 0;
+    updateMusicBadge();
+    safePlay();
+    badge('🎵 ' + track.title);
+  }
+
+  function nextTrack() {
+    playTrack(currentTrackIdx + 1);
+  }
+
+  function prevTrack() {
+    playTrack(currentTrackIdx - 1);
+  }
+
   function seekToStart() {
-    var t = P.music.startAt || 0;
+    var t = (currentTrackIdx === 0 && P.music.startAt) ? P.music.startAt : 0;
     if (audio.readyState >= 1) { try { audio.currentTime = t; } catch (e) { } }
     else audio.addEventListener('loadedmetadata', function once() {
       audio.removeEventListener('loadedmetadata', once);
@@ -703,6 +742,8 @@
     var k = e.keyCode;
     if (state.gate) { e.preventDefault(); closeGateAndStart(); return; }
     if (k === K.PLAYPAUSE || k === K.PLAY || k === K.PAUSE || k === K.M) { e.preventDefault(); toggleMute(); return; }
+    if (k === K.NEXT || k === K.FF || k === K.N) { e.preventDefault(); nextTrack(); return; }
+    if (k === K.PREV || k === K.P) { e.preventDefault(); prevTrack(); return; }
     if (isBack(k)) e.preventDefault(); // never let BACK exit the app mid-party
 
     triggerTapSound();
@@ -796,6 +837,13 @@
     if (closest(t, '#global-wifi')) {
       triggerTapSound();
       toggleMute();
+      return;
+    }
+
+    // Tap Music badge anywhere to skip to the next celebration track
+    if (closest(t, '#global-music')) {
+      triggerTapSound();
+      nextTrack();
       return;
     }
 
@@ -927,7 +975,7 @@
     touchStartY = e.touches[0].clientY;
     touchTarget = e.target;
     // Play sound immediately on physical finger contact for zero latency
-    if (closest(e.target, '.tile, .home-photo-card, #home-title, .gallery-item, .quiz-option, .quiz-btn, .drink-cat-pill, .drink-item, .touch-back-btn, .lightbox-nav, .lightbox-close-btn, #global-wifi, #drinks-detail, #start-gate')) {
+    if (closest(e.target, '.tile, .home-photo-card, #home-title, .gallery-item, .quiz-option, .quiz-btn, .drink-cat-pill, .drink-item, .touch-back-btn, .lightbox-nav, .lightbox-close-btn, #global-wifi, #global-music, #drinks-detail, #start-gate')) {
       triggerTapSound();
     }
   }, false);
@@ -1070,18 +1118,18 @@
     Slideshow.start();
     SoundFX.init();
 
-    audio.loop = true;
+    audio.loop = false; // Playlist auto-advances through all celebration songs
     audio.volume = P.music.introVolume;
-    // Explicit 'ended' fallback in case older/certain TV webkit builds drop audio.loop
     audio.addEventListener('ended', function () {
-      audio.currentTime = P.music.startAt || 0;
-      safePlay();
+      nextTrack();
     });
     audio.addEventListener('error', function () {
-      state.musicOk = false;
-      badge('No theme song found: add ' + P.music.src);
+      badge('Audio load error — skipping track');
+      setTimeout(nextTrack, 1500);
     });
-    audio.src = P.music.src;
+    var pl = getPlaylist();
+    audio.src = pl[0].src;
+    updateMusicBadge();
 
     // Try to autoplay. TVs allow it; desktop browsers may block until a key press.
     var p;

@@ -166,12 +166,13 @@ html, body { width: 100%; height: 100%; background: #000; overflow: hidden; curs
 }
 .play .prompt { animation: fadeIn .8s 4.6s both, blink 1.6s 5.4s ease-in-out infinite; }
 
-/* ================= PERMANENT TOP-RIGHT WI-FI BADGE ================= */
+/* ================= PERMANENT TOP-RIGHT WI-FI & MUSIC BADGES ================= */
 .global-wifi-badge,
 .intro-wifi-badge {
   position: absolute;
   top: 36px;
   right: 45px;
+  width: 330px;
   z-index: 15;
   display: flex;
   align-items: center;
@@ -179,9 +180,18 @@ html, body { width: 100%; height: 100%; background: #000; overflow: hidden; curs
   border: 3px solid rgba(53, 224, 255, 0.7);
   box-shadow: 0 0 20px rgba(53, 224, 255, 0.3);
   border-radius: 24px;
-  padding: 16px 26px;
-  pointer-events: none;
+  padding: 14px 22px;
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
   transform: translateZ(0);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.global-wifi-badge:active {
+  transform: scale(0.96) translateZ(0);
+  border-color: #ffd34d;
 }
 
 .wifi-icon {
@@ -197,17 +207,17 @@ html, body { width: 100%; height: 100%; background: #000; overflow: hidden; curs
 }
 
 .wifi-label {
-  font-size: 20px;
+  font-size: 19px;
   letter-spacing: 3px;
   color: #ff2fb4;
   font-family: Arial, sans-serif;
   font-weight: bold;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
   text-shadow: 0 0 8px rgba(255, 47, 180, 0.7);
 }
 
 .wifi-row {
-  font-size: 26px;
+  font-size: 24px;
   line-height: 1.25;
   color: #fff;
   font-family: Arial, sans-serif;
@@ -226,6 +236,76 @@ html, body { width: 100%; height: 100%; background: #000; overflow: hidden; curs
   letter-spacing: 1.5px;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
+
+.global-music-badge {
+  position: absolute;
+  top: 155px;
+  right: 45px;
+  width: 330px;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  background: rgba(12, 3, 25, 0.96);
+  border: 3px solid rgba(255, 47, 180, 0.75);
+  box-shadow: 0 0 20px rgba(255, 47, 180, 0.35);
+  border-radius: 24px;
+  padding: 12px 20px;
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transform: translateZ(0);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.global-music-badge:active {
+  transform: scale(0.96) translateZ(0);
+  border-color: #ffd34d;
+}
+
+.music-icon {
+  font-size: 36px;
+  margin-right: 16px;
+  color: #ff2fb4;
+  text-shadow: 0 0 12px rgba(255, 47, 180, 0.8);
+  flex-shrink: 0;
+}
+
+.music-details {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.music-label {
+  font-size: 17px;
+  letter-spacing: 2px;
+  color: #35e0ff;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.music-track-title {
+  font-size: 21px;
+  color: #ffd34d;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 230px;
+}
+
+.music-sub {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.65);
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+
 
 /* ================= INTRO TIMELINE OVERLAY ================= */
 .intro-timeline {

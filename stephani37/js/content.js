@@ -20,6 +20,13 @@ window.PARTY = {
   music: {
     // Drop your entrance theme here (mp3 or m4a). Loops forever.
     src: 'assets/audio/theme.mp3',
+    playlist: [
+      { title: "Intro Theme (Synthwave)", src: 'assets/audio/theme.mp3' },
+      { title: "Levitating • Dua Lipa", src: 'assets/audio/levitating.mp3' },
+      { title: "CUFF IT • Beyoncé", src: 'assets/audio/cuff_it.mp3' },
+      { title: "September • Earth, Wind & Fire", src: 'assets/audio/september.mp3' },
+      { title: "Fly As Me • Silk Sonic", src: 'assets/audio/fly_as_me.mp3' }
+    ],
     startAt: 0,            // seconds — skip a slow intro and hit the drop
     introVolume: 1.0,      // 0.0 – 1.0
     homeVolume: 0.35,      // volume ducks to this on the home hub
