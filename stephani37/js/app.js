@@ -145,22 +145,12 @@
     return [{ title: 'Party Theme', src: P.music.src }];
   }
 
-  function updateMusicBadge() {
-    var pl = getPlaylist();
-    var track = pl[currentTrackIdx];
-    var titleEl = $('music-track-title');
-    if (titleEl && track) {
-      titleEl.textContent = track.title;
-    }
-  }
-
   function playTrack(idx) {
     var pl = getPlaylist();
     currentTrackIdx = (idx + pl.length) % pl.length;
     var track = pl[currentTrackIdx];
     audio.src = track.src;
     audio.currentTime = (currentTrackIdx === 0 && P.music.startAt) ? P.music.startAt : 0;
-    updateMusicBadge();
     safePlay();
     badge('🎵 ' + track.title);
   }
@@ -840,13 +830,6 @@
       return;
     }
 
-    // Tap Music badge anywhere to skip to the next celebration track
-    if (closest(t, '#global-music')) {
-      triggerTapSound();
-      nextTrack();
-      return;
-    }
-
     // Lightbox open: handle prev, next, close, or backdrop tap
     if (isLightboxOpen) {
       triggerTapSound();
@@ -975,7 +958,7 @@
     touchStartY = e.touches[0].clientY;
     touchTarget = e.target;
     // Play sound immediately on physical finger contact for zero latency
-    if (closest(e.target, '.tile, .home-photo-card, #home-title, .gallery-item, .quiz-option, .quiz-btn, .drink-cat-pill, .drink-item, .touch-back-btn, .lightbox-nav, .lightbox-close-btn, #global-wifi, #global-music, #drinks-detail, #start-gate')) {
+    if (closest(e.target, '.tile, .home-photo-card, #home-title, .gallery-item, .quiz-option, .quiz-btn, .drink-cat-pill, .drink-item, .touch-back-btn, .lightbox-nav, .lightbox-close-btn, #global-wifi, #drinks-detail, #start-gate')) {
       triggerTapSound();
     }
   }, false);
@@ -1129,7 +1112,6 @@
     });
     var pl = getPlaylist();
     audio.src = pl[0].src;
-    updateMusicBadge();
 
     // Try to autoplay. TVs allow it; desktop browsers may block until a key press.
     var p;
