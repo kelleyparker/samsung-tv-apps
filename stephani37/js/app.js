@@ -830,6 +830,14 @@
       return;
     }
 
+    // Tap Bartender badge anywhere for fun confetti & reminder
+    if (closest(t, '#global-bartender')) {
+      triggerTapSound();
+      FX.burst(220, 80, 35);
+      badge('🍹 Custom drinks available — ask Kelley!');
+      return;
+    }
+
     // Lightbox open: handle prev, next, close, or backdrop tap
     if (isLightboxOpen) {
       triggerTapSound();
@@ -958,7 +966,7 @@
     touchStartY = e.touches[0].clientY;
     touchTarget = e.target;
     // Play sound immediately on physical finger contact for zero latency
-    if (closest(e.target, '.tile, .home-photo-card, #home-title, .gallery-item, .quiz-option, .quiz-btn, .drink-cat-pill, .drink-item, .touch-back-btn, .lightbox-nav, .lightbox-close-btn, #global-wifi, #drinks-detail, #start-gate')) {
+    if (closest(e.target, '.tile, .home-photo-card, #home-title, .gallery-item, .quiz-option, .quiz-btn, .drink-cat-pill, .drink-item, .touch-back-btn, .lightbox-nav, .lightbox-close-btn, #global-wifi, #global-bartender, #drinks-detail, #start-gate')) {
       triggerTapSound();
     }
   }, false);
