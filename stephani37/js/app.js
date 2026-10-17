@@ -1078,17 +1078,6 @@
     $('t-num').innerHTML = P.intro.number + '<span>' + P.intro.suffix + '</span>';
     $('t-party').textContent = P.intro.tagline;
 
-    // Build intro party timeline overlay
-    var tl = P.timeline || [];
-    var introTlHtml = '';
-    tl.forEach(function (item) {
-      introTlHtml += '<div class="intro-timeline-row">' +
-                       '<div class="intro-timeline-time">' + item.time + '</div>' +
-                       '<div class="intro-timeline-event">' + item.event + '</div>' +
-                     '</div>';
-    });
-    if ($('intro-timeline-list')) $('intro-timeline-list').innerHTML = introTlHtml;
-
     // Bind WiFi details from config
     if (P.wifi) {
       if ($('wifi-ssid')) $('wifi-ssid').textContent = P.wifi.ssid;
